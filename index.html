@@ -712,7 +712,36 @@
     <p style="max-width:520px; margin: 0 auto; color: var(--grey);">
       Madeleine at the Movies airs on <strong style="color:var(--cream)">GDR 95.7fm</strong> every Tuesday and Friday at 12:10pm. Tune in for new reviews, conversations, and the occasional argument about whether <em>Vertigo</em> is really the best film ever made.
     </p>
+    <div id="listen-live-wrap" style="margin-top:2rem; display:none;">
+      <a id="listen-live-link" href="https://goldendaysradio.com/gdr-streaming-player/" target="_blank"
+         style="display:inline-block; font-size:0.85rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#ff2222; border:2px solid #ff2222; padding:0.75rem 2.2rem; animation: pulse 1.5s infinite;">
+        ● Live Now — Listen
+      </a>
+    </div>
   </section>
+
+  <script>
+    function checkOnAir() {
+      // Use Melbourne time (Australia/Melbourne handles AEDT/AEST automatically)
+      const now = new Date();
+      const melb = new Date(now.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne' }));
+      const day  = melb.getDay();   // 0=Sun, 2=Tue, 5=Fri
+      const hour = melb.getHours();
+      const min  = melb.getMinutes();
+      const totalMin = hour * 60 + min;
+      const onAir = (day === 2 || day === 5) && totalMin >= 730 && totalMin < 740; // 12:10–12:20
+      document.getElementById('listen-live-wrap').style.display = onAir ? 'block' : 'none';
+    }
+    checkOnAir();
+    setInterval(checkOnAir, 30000); // recheck every 30 seconds
+  </script>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+  </style>
 
   <!-- Footer -->
   <footer>
