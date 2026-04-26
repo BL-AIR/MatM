@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Madeleine at the Movies</title>
+  <meta name="description" content="Film reviews and commentary by Madeleine Swain, as heard on Golden Days Radio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0c0c0c;
+      --dark:    #141414;
+      --mid:     #1e1e1e;
+      --border:  #2e2e2e;
+      --gold:    #c9a84c;
+      --gold-lt: #e2c97e;
+      --cream:   #f0ead8;
+      --grey:    #aaaaaa;
+      --white:   #f5f5f5;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--black);
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { color: var(--gold-lt); }
+
+    img { display: block; max-width: 100%; }
+
+    /* ── Film-strip divider ───────────────────────────── */
+    .filmstrip {
+      width: 100%;
+      height: 32px;
+      background-color: var(--border);
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0px,
+          transparent 12px,
+          var(--black) 12px,
+          var(--black) 20px
+        );
+      background-size: auto 100%;
+      border-top: 4px solid var(--border);
+      border-bottom: 4px solid var(--border);
+    }
+
+    /* ── Navigation ───────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(12, 12, 12, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: var(--gold);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── Hero ─────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      background:
+        radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%),
+        var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--cream);
+      margin-bottom: 0.3em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-subtitle {
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-lead {
+      max-width: 560px;
+      font-size: 1.05rem;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      display: inline-block;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 0.75rem 2.2rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .hero-cta:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    /* ── Section shells ───────────────────────────────── */
+    section {
+      padding: 6rem 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── About ────────────────────────────────────────── */
+    #about .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-portrait {
+      aspect-ratio: 3 / 4;
+      background: var(--mid);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--border);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-portrait::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.04) 0%, transparent 60%);
+    }
+
+    .about-text p {
+      color: var(--grey);
+      margin-bottom: 1.2rem;
+      font-size: 1.0rem;
+    }
+
+    .about-text p:first-of-type {
+      font-size: 1.15rem;
+      color: var(--cream);
+    }
+
+    .station-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--grey);
+    }
+
+    .station-badge span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* ── Reviews ──────────────────────────────────────── */
+    #reviews { background: none; }
+
+    #reviews .reviews-intro {
+      max-width: 600px;
+      color: var(--grey);
+      margin-bottom: 3.5rem;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .review-card {
+      background: var(--dark);
+      padding: 2rem;
+      transition: background 0.2s;
+    }
+
+    .review-card:hover { background: var(--mid); }
+
+    .review-year {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .review-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 0.2rem;
+      line-height: 1.3;
+    }
+
+    .review-director {
+      font-size: 0.78rem;
+      color: var(--grey);
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .review-stars {
+      color: var(--gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .review-excerpt {
+      font-size: 0.92rem;
+      color: var(--grey);
+      line-height: 1.75;
+    }
+
+    .review-read-more {
+      display: inline-block;
+      margin-top: 1.2rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .review-read-more:hover { border-color: var(--gold); }
+
+    /* ── On the radio ─────────────────────────────────── */
+    #on-air {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 5rem 2rem;
+      background: var(--dark);
+    }
+
+    #on-air .section-rule { margin: 0 auto 2.5rem; }
+
+    #on-air p {
+      max-width: 520px;
+      margin: 0 auto;
+      color: var(--grey);
+    }
+
+    .radio-dial {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--gold);
+      margin: 1.5rem 0 0.5rem;
+      font-style: italic;
+    }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--border);
+    }
+
+    footer a { color: var(--border); }
+    footer a:hover { color: var(--gold); }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 640px) {
+      #about .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .about-portrait { aspect-ratio: 4 / 3; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <span class="nav-brand">M·A·T·M</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#on-air">On Air</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <p class="hero-eyebrow">Golden Days Radio</p>
+    <h1 class="hero-title">Madeleine<br><em>at the Movies</em></h1>
+    <p class="hero-subtitle">With Madeleine Swain</p>
+    <div class="hero-rule"></div>
+    <p class="hero-lead">Film criticism with warmth, wit, and a love for the pictures — old and new, foreign and familiar.</p>
+    <a href="#reviews" class="hero-cta">Read the Reviews</a>
+  </section>
+
+  <div class="filmstrip"></div>
+
+  <!-- About -->
+  <section id="about">
+    <p class="section-label">About</p>
+    <h2 class="section-title">The Woman Behind the Microphone</h2>
+    <div class="section-rule"></div>
+    <div class="about-grid">
+      <div class="about-portrait">
+        <!-- Replace with: <img src="madeleine.jpg" alt="Madeleine Swain" /> -->
+        <span>Photo</span>
+      </div>
+      <div class="about-text">
+        <p>Madeleine Swain has been watching films all her life and talking about them for nearly as long. She brings to the screen a lifetime of reading, a sharp eye for performance, and a genuine love for the medium in all its forms.</p>
+        <p>Each week on Golden Days Radio, Madeleine reviews new releases and revisits the classics — holding them up to the light, turning them over, and asking what they mean to us now.</p>
+        <p>Her reviews are guided by a simple conviction: that cinema, at its best, tells us something true about what it is to be alive.</p>
+        <div class="station-badge">
+          Heard on &nbsp;<span>Golden Days Radio</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filmstrip"></div>
+
+  <!-- Reviews -->
+  <section id="reviews" style="max-width:100%; padding: 6rem 4rem;">
+    <div style="max-width:960px; margin: 0 auto;">
+      <p class="section-label">Reviews</p>
+      <h2 class="section-title">From the Notebook</h2>
+      <div class="section-rule"></div>
+      <p class="reviews-intro">Madeleine's written reviews — the full text of what she thinks, beyond what three minutes on air allows.</p>
+    </div>
+    <div class="reviews-grid" style="max-width:960px; margin: 0 auto;">
+
+      <div class="review-card">
+        <p class="review-year">2024</p>
+        <h3 class="review-title">Anora</h3>
+        <p class="review-director">dir. Sean Baker</p>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-excerpt">A film that shouldn't work as well as it does — and then, in its final minutes, becomes something you won't forget easily. Baker's great subject has always been the economy of desire, and here he finds his masterpiece.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+      <div class="review-card">
+        <p class="review-year">2024</p>
+        <h3 class="review-title">The Substance</h3>
+        <p class="review-director">dir. Coralie Fargeat</p>
+        <p class="review-stars">★★★★</p>
+        <p class="review-excerpt">Fargeat takes the body horror genre and uses it like a scalpel — not on her characters, but on an industry and a culture that has always consumed women from the outside in. Messy, deliberate, and unmissable.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+      <div class="review-card">
+        <p class="review-year">1950</p>
+        <h3 class="review-title">All About Eve</h3>
+        <p class="review-director">dir. Joseph L. Mankiewicz</p>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-excerpt">The wittiest film ever made about ambition, performance, and the theatre of everyday life. Every line is a small perfect knife. Bette Davis has never been better, which is saying a great deal.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+      <div class="review-card">
+        <p class="review-year">1963</p>
+        <h3 class="review-title">8½</h3>
+        <p class="review-director">dir. Federico Fellini</p>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-excerpt">I return to this film every few years and find something new — or perhaps it is I who have changed, and the film simply holds its ground. An act of cinema that has never aged because it was never really about its moment.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+      <div class="review-card">
+        <p class="review-year">2023</p>
+        <h3 class="review-title">Past Lives</h3>
+        <p class="review-director">dir. Celine Song</p>
+        <p class="review-stars">★★★★★</p>
+        <p class="review-excerpt">A film about what we leave behind when we leave — countries, languages, versions of ourselves. Song's debut is so quiet and so precise that it sneaks up on you entirely. The last scene is one of the great endings in recent cinema.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+      <div class="review-card">
+        <p class="review-year">1941</p>
+        <h3 class="review-title">The Maltese Falcon</h3>
+        <p class="review-director">dir. John Huston</p>
+        <p class="review-stars">★★★★</p>
+        <p class="review-excerpt">A film in love with its own shadows. Huston and Bogart make cynicism feel like a moral position — and perhaps, in 1941, it was. The falcon is a MacGuffin, yes, but it is also a perfect emblem of all that glitters.</p>
+        <a href="#" class="review-read-more">Read more →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="filmstrip"></div>
+
+  <!-- On Air -->
+  <section id="on-air" style="max-width:100%; padding: 5rem 2rem; text-align:center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--dark);">
+    <p class="section-label" style="text-align:center;">On the Radio</p>
+    <div class="section-rule" style="margin: 0 auto 1rem;"></div>
+    <div class="radio-dial">Golden Days Radio</div>
+    <p style="max-width:520px; margin: 0 auto; color: var(--grey);">
+      Madeleine at the Movies airs weekly on Golden Days Radio. Tune in for new reviews, conversations, and the occasional argument about whether <em>Vertigo</em> is really the best film ever made.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Madeleine at the Movies &nbsp;·&nbsp; <a href="https://matm.com.au">matm.com.au</a> &nbsp;·&nbsp; Golden Days Radio</p>
+  </footer>
+
+</body>
+</html>
