@@ -441,6 +441,49 @@
     footer a { color: var(--border); }
     footer a:hover { color: var(--gold); }
 
+    /* ── Film sprockets ───────────────────────────────── */
+    .sprocket {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 22px;
+      background-color: #1a1a1a;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .sprocket-left  { left: 0; }
+    .sprocket-right { right: 0; }
+
+    .sprocket::before,
+    .sprocket::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      top: 0;
+      bottom: 0;
+    }
+
+    /* centre line */
+    .sprocket::before {
+      border-left: 1px solid #2a2a2a;
+      border-right: 1px solid #2a2a2a;
+    }
+
+    /* sprocket holes */
+    .sprocket::after {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent       0px,
+        transparent       8px,
+        var(--black)      8px,
+        var(--black)      18px,
+        transparent       18px,
+        transparent       26px
+      );
+    }
+
     /* ── Responsive ───────────────────────────────────── */
     @media (max-width: 640px) {
       #about .about-grid {
@@ -449,10 +492,15 @@
       }
       .about-portrait { aspect-ratio: 4 / 3; }
       .nav-links { display: none; }
+      .sprocket { display: none; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Film sprockets -->
+  <div class="sprocket sprocket-left"></div>
+  <div class="sprocket sprocket-right"></div>
 
   <!-- Navigation -->
   <nav>
