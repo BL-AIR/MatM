@@ -222,24 +222,17 @@
 
     .about-portrait {
       aspect-ratio: 3 / 4;
-      background: var(--mid);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--border);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      background: var(--black);
       position: relative;
       overflow: hidden;
     }
 
-    .about-portrait::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(201,168,76,0.04) 0%, transparent 60%);
+    .about-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      -webkit-mask-image: radial-gradient(ellipse 80% 85% at 50% 38%, black 25%, transparent 72%);
+      mask-image: radial-gradient(ellipse 80% 85% at 50% 38%, black 25%, transparent 72%);
     }
 
     .about-text p {
@@ -506,7 +499,7 @@
     <div class="section-rule"></div>
     <div class="about-grid">
       <div class="about-portrait">
-        <img src="Images/Madeleine-Swain.png" alt="Madeleine Swain" style="width:100%; height:100%; object-fit:cover;" />
+        <img src="Images/Madeleine-Swain.png" alt="Madeleine Swain" />
       </div>
       <div class="about-text">
         <p>Madeleine Swain has been watching films all her life and talking about them for nearly as long. She brings to the screen a lifetime of reading, a sharp eye for performance, and a genuine love for the medium in all its forms.</p>
