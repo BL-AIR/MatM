@@ -446,43 +446,17 @@
       position: fixed;
       top: 0;
       bottom: 0;
-      width: 22px;
-      background-color: #1a1a1a;
+      width: 28px;
       z-index: 50;
       pointer-events: none;
+      background-color: #111;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='26'%3E%3Crect width='28' height='26' fill='%23111111'/%3E%3Crect x='4' y='5' width='20' height='16' rx='3' ry='3' fill='%23cfc8b4'/%3E%3C/svg%3E");
+      background-repeat: repeat-y;
+      background-position: center top;
     }
 
     .sprocket-left  { left: 0; }
     .sprocket-right { right: 0; }
-
-    .sprocket::before,
-    .sprocket::after {
-      content: '';
-      position: absolute;
-      left: 3px;
-      right: 3px;
-      top: 0;
-      bottom: 0;
-    }
-
-    /* centre line */
-    .sprocket::before {
-      border-left: 1px solid #2a2a2a;
-      border-right: 1px solid #2a2a2a;
-    }
-
-    /* sprocket holes */
-    .sprocket::after {
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent       0px,
-        transparent       8px,
-        var(--black)      8px,
-        var(--black)      18px,
-        transparent       18px,
-        transparent       26px
-      );
-    }
 
     /* ── Responsive ───────────────────────────────────── */
     @media (max-width: 640px) {
