@@ -449,6 +449,143 @@
     .sprocket-left  { left: 0; }
     .sprocket-right { right: 0; }
 
+    /* ── Audio Player ─────────────────────────────────── */
+    #matm-player {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(12, 12, 12, 0.98);
+      border-top: 1px solid var(--gold);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    #matm-player.active { transform: translateY(0); }
+
+    .player-caption {
+      padding: 0.5rem 4rem;
+      font-size: 0.88rem;
+      color: var(--cream);
+      font-style: italic;
+      min-height: 2.2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--dark);
+      line-height: 1.5;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 0.75rem 2rem;
+    }
+
+    .player-meta {
+      min-width: 140px;
+    }
+
+    .player-episode {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .player-films {
+      font-size: 0.75rem;
+      color: var(--grey);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .player-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--cream);
+      cursor: pointer;
+      font-size: 0.95rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .player-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    #player-play {
+      border-color: var(--gold);
+      color: var(--gold);
+      width: 2.6rem;
+      height: 2.6rem;
+      font-size: 1.1rem;
+    }
+
+    .player-progress-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .player-progress {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .player-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      width: 0%;
+      pointer-events: none;
+      transition: width 0.25s linear;
+    }
+
+    .player-time {
+      font-size: 0.68rem;
+      color: var(--grey);
+      letter-spacing: 0.06em;
+    }
+
+    .player-close {
+      background: none;
+      border: none;
+      color: var(--grey);
+      cursor: pointer;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.5rem;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .player-close:hover { color: var(--gold); }
+
+    .episode-card { cursor: pointer; }
+    .episode-card:hover .episode-play-hint { opacity: 1; }
+
+    .episode-play-hint {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
     /* ── Responsive ───────────────────────────────────── */
     @media (max-width: 640px) {
       #about .about-grid {
@@ -458,6 +595,9 @@
       .about-portrait { aspect-ratio: 4 / 3; }
       .nav-links { display: none; }
       .sprocket { display: none; }
+      .player-caption { padding: 0.5rem 1rem; }
+      .player-controls { gap: 0.7rem; padding: 0.6rem 1rem; }
+      .player-meta { display: none; }
     }
   </style>
 </head>
@@ -590,121 +730,145 @@
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 719</span><span class="episode-date">19 April 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Calle Málaga</li><li>Jean Valjean</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 718</span><span class="episode-date">12 April 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The Drama</li><li>Hands Up Who Needs a Hug</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 717</span><span class="episode-date">2 April 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Project Hail Mary</li><li>The Deb</li><li>The Magic Faraway Tree</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 716</span><span class="episode-date">26 March 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The President's Cake</li><li>Othello</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 715</span><span class="episode-date">22 March 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>I Swear</li><li>Shark Kingdom: 3D</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 714</span><span class="episode-date">14 March 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The Plague</li><li>Proclivitas</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 713</span><span class="episode-date">8 March 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>How to Make a Killing</li><li>The Testament of Ann Lee</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 712</span><span class="episode-date">1 March 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Hamlet</li><li>Pillion</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 711</span><span class="episode-date">22 February 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>EPiC: Elvis Presley in Concert</li><li>Fackham Hall</li><li>Killer Whale</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 710</span><span class="episode-date">15 February 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Wuthering Heights</li><li>Plain Clothes</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 709</span><span class="episode-date">6 February 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The Secret Agent</li><li>No Other Choice</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 708</span><span class="episode-date">1 February 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Blue Moon</li><li>Send Help</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 707</span><span class="episode-date">26 January 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Hamnet</li><li>Marty Supreme</li><li>28 Years Later: the Bone Temple</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 706</span><span class="episode-date">18 January 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The Choral</li><li>My Brother's Band</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 705</span><span class="episode-date">11 January 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Song Sung Blue</li><li>The Housemaid</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 704</span><span class="episode-date">4 January 2026</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Best of 2025</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 703</span><span class="episode-date">27 December 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>The History of Sound</li><li>Urchin</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 702</span><span class="episode-date">22 December 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Avatar: Fire &amp; Ash</li><li>SpongeBob SquarePants Movie</li><li>David</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 701</span><span class="episode-date">12 December 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Eleanor the Great</li><li>Nuremberg</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 700</span><span class="episode-date">7 December 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Careless</li><li>Eternity</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 699</span><span class="episode-date">30 November 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Dead of Winter</li><li>The Fifth Step</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 698</span><span class="episode-date">22 November 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Wicked for Good</li><li>Train Dreams</li><li>Christmas Karma</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 697</span><span class="episode-date">16 November 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Running Man</li><li>All Her Fault</li></ul>
       </div>
 
       <div class="episode-card">
         <div class="episode-meta"><span class="episode-number">Ep 696</span><span class="episode-date">9 November 2025</span></div>
+        <p class="episode-play-hint">▶ Listen</p>
         <ul class="episode-films"><li>Prime Minister</li><li>Four Mothers</li><li>The North</li></ul>
       </div>
 
@@ -752,6 +916,135 @@
       50%       { opacity: 0.6; }
     }
   </style>
+
+  <!-- Audio Player -->
+  <div id="matm-player">
+    <div class="player-caption" id="player-caption"></div>
+    <div class="player-controls">
+      <div class="player-meta">
+        <p class="player-episode" id="player-episode"></p>
+        <p class="player-films" id="player-films"></p>
+      </div>
+      <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
+      <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
+      <div class="player-progress-wrap">
+        <div class="player-progress" id="player-progress">
+          <div class="player-progress-fill" id="player-progress-fill"></div>
+        </div>
+        <span class="player-time" id="player-time">0:00 / 0:00</span>
+      </div>
+      <audio id="player-audio"></audio>
+      <button class="player-close" id="player-close">✕ Close</button>
+    </div>
+  </div>
+
+  <script>
+    // ── Audio Player ─────────────────────────────────────────
+    const R2 = 'https://pub-fca72aca0d2a44489ca717888abac149.r2.dev';
+
+    const playerEl  = document.getElementById('matm-player');
+    const audioEl   = document.getElementById('player-audio');
+    const playBtn   = document.getElementById('player-play');
+    const backBtn   = document.getElementById('player-back');
+    const closeBtn  = document.getElementById('player-close');
+    const progressEl= document.getElementById('player-progress');
+    const fillEl    = document.getElementById('player-progress-fill');
+    const timeEl    = document.getElementById('player-time');
+    const captionEl = document.getElementById('player-caption');
+    const epLabel   = document.getElementById('player-episode');
+    const filmsLabel= document.getElementById('player-films');
+
+    let cues = [];
+
+    function pad4(n) { return String(n).padStart(4, '0'); }
+
+    function fmt(s) {
+      if (isNaN(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    }
+
+    function parseVTT(text) {
+      const result = [];
+      text.split(/\n\n+/).forEach(block => {
+        const lines = block.trim().split('\n');
+        const tl = lines.find(l => l.includes('-->'));
+        if (!tl) return;
+        const [a, b] = tl.split('-->').map(t => {
+          const p = t.trim().split(':');
+          return +p[0] * 3600 + +p[1] * 60 + parseFloat(p[2]);
+        });
+        const txt = lines.filter(l => !l.includes('-->') && !/^\d+$/.test(l.trim())).join(' ').trim();
+        if (txt) result.push({ start: a, end: b, text: txt });
+      });
+      return result;
+    }
+
+    async function loadEpisode(epNum, films) {
+      const base = R2 + '/MatM_' + pad4(epNum);
+      epLabel.textContent  = 'Ep ' + epNum;
+      filmsLabel.textContent = films;
+      captionEl.textContent  = '';
+      cues = [];
+
+      audioEl.innerHTML = '';
+      [['audio/webm; codecs=opus', '.webm'], ['audio/mp4', '.m4a']].forEach(([type, ext]) => {
+        const s = document.createElement('source');
+        s.src = base + ext; s.type = type;
+        audioEl.appendChild(s);
+      });
+      audioEl.load();
+      audioEl.play().catch(() => {});
+      playBtn.textContent = '⏸';
+      playerEl.classList.add('active');
+
+      try {
+        const res = await fetch(base + '.vtt');
+        if (res.ok) cues = parseVTT(await res.text());
+      } catch(e) {}
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (audioEl.paused) { audioEl.play(); playBtn.textContent = '⏸'; }
+      else { audioEl.pause(); playBtn.textContent = '▶'; }
+    });
+
+    backBtn.addEventListener('click', () => {
+      audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
+    });
+
+    closeBtn.addEventListener('click', () => {
+      audioEl.pause();
+      playerEl.classList.remove('active');
+      playBtn.textContent = '▶';
+    });
+
+    audioEl.addEventListener('timeupdate', () => {
+      const cur = audioEl.currentTime, dur = audioEl.duration || 0;
+      fillEl.style.width = dur ? (cur / dur * 100) + '%' : '0%';
+      timeEl.textContent = fmt(cur) + ' / ' + fmt(dur);
+      const cue = cues.find(c => cur >= c.start && cur <= c.end);
+      captionEl.textContent = cue ? cue.text : '';
+    });
+
+    audioEl.addEventListener('ended', () => { playBtn.textContent = '▶'; });
+
+    progressEl.addEventListener('click', e => {
+      const r = progressEl.getBoundingClientRect();
+      audioEl.currentTime = ((e.clientX - r.left) / r.width) * (audioEl.duration || 0);
+    });
+
+    // Wire episode cards
+    document.querySelectorAll('.episode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const epText = card.querySelector('.episode-number').textContent.trim();
+        const epNum  = parseInt(epText.replace(/^Ep\s*/i, ''));
+        const films  = Array.from(card.querySelectorAll('.episode-films li'))
+                         .map(li => li.textContent.trim()).join(' · ');
+        loadEpisode(epNum, films);
+      });
+    });
+  </script>
 
   <!-- Footer -->
   <footer>
