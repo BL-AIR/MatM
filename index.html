@@ -1138,7 +1138,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const TMDB_KEY  = 'bddb259b85eb28cc52cb8df97987050e';
       const TMDB_BASE = 'https://api.themoviedb.org/3';
       const IMG_BASE  = 'https://image.tmdb.org/t/p/w92';
-      const CACHE_KEY = 'matm_tmdb_v1';
+      const CACHE_KEY = 'matm_tmdb_v2'; // bump version to clear old cache
+
+      // ── Override tables ─────────────────────────────
+      // Titles that should never be looked up (specials, festivals, roundups).
+      // Matched case-insensitively against the cleaned title.
+      const SKIP_EXACT = new Set([
+        'best of 2025', 'best of 2024', 'best of 2023', 'best of 2022',
+        '2022 in review', '2023 in review', '2024 in review', '2025 in review',
+        'top 10 of all time',
+        'mqff', 'cat video fest',
+        'interview with noni hazelhurst',
+        'one mind, one heart',
+      ]);
+
+      // Skip if title *contains* any of these substrings.
+      const SKIP_CONTAINS = [
+        'film festival', 'best of 20', ' in review',
+      ];
+
+      // Manual IMDB ID overrides.
+      // Set to a 'ttXXXXXXX' string to force a specific link.
+      // Set to null to show the poster but suppress the IMDB link entirely.
+      const IMDB_OVERRIDE = {
+        // Example: 'some film': 'tt1234567',
+        // Example: 'ambiguous title': null,
+      };
+
+      function shouldSkip(title) {
+        const t = title.toLowerCase().trim();
+        if (SKIP_EXACT.has(t)) return true;
+        return SKIP_CONTAINS.some(p => t.includes(p));
+      }
 
       function getCache() {
         try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); }
@@ -1157,6 +1188,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const wait = ms => new Promise(res => setTimeout(res, ms));
 
       async function lookupFilm(title) {
+        if (shouldSkip(title)) return null;
         const cache = getCache();
         const key   = title.toLowerCase().trim();
         if (key in cache) return cache[key];
@@ -1179,8 +1211,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 if (r2.ok) { const d2 = await r2.json(); imdbId = d2.imdb_id || null; }
               } catch (e) {}
               result = {
-                poster : m.poster_path ? IMG_BASE + m.poster_path : null,
-                imdbId : imdbId
+                poster   : m.poster_path ? IMG_BASE + m.poster_path : null,
+                posterLg : m.poster_path ? 'https://image.tmdb.org/t/p/w342' + m.poster_path : null,
+                imdbId   : imdbId
               };
             }
           }
@@ -1216,6 +1249,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           img.alt = '';
           img.loading = 'lazy';
           wrap.appendChild(img);
+          if (data.posterLg) wrap.dataset.posterLg = data.posterLg;
         }
         // Links
         const linksEl = li.querySelector('.film-ext-links');
@@ -1226,9 +1260,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           rt.rel = 'noopener';
           rt.textContent = 'RT';
           rt.addEventListener('click', e => e.stopPropagation());
-          if (data && data.imdbId) {
+          // IMDB_OVERRIDE takes precedence: explicit ID, or null to suppress
+          const overrideKey = title.toLowerCase().trim();
+          const imdbId = (overrideKey in IMDB_OVERRIDE)
+            ? IMDB_OVERRIDE[overrideKey]
+            : (data && data.imdbId);
+          if (imdbId) {
             const imdb = document.createElement('a');
-            imdb.href = 'https://www.imdb.com/title/' + data.imdbId + '/';
+            imdb.href = 'https://www.imdb.com/title/' + imdbId + '/';
             imdb.target = '_blank';
             imdb.rel = 'noopener';
             imdb.textContent = 'IMDb';
@@ -1269,6 +1308,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // Observe initial cards
       observeNew();
+
+      // ── Poster hover tooltip ────────────────────────
+      const tip = document.createElement('div');
+      tip.style.cssText =
+        'position:fixed;z-index:9999;display:none;pointer-events:none;' +
+        'box-shadow:0 8px 32px rgba(0,0,0,0.85);border:1px solid #2e2e2e;' +
+        'border-radius:3px;overflow:hidden;transition:opacity 0.15s;';
+      const tipImg = document.createElement('img');
+      tipImg.style.cssText = 'display:block;width:160px;';
+      tip.appendChild(tipImg);
+      document.body.appendChild(tip);
+
+      function placeTip(wrap) {
+        const r = wrap.getBoundingClientRect();
+        const tw = 160, th = 240;
+        let x = r.right + 10;
+        let y = r.top;
+        if (x + tw > window.innerWidth  - 8) x = r.left - tw - 10;
+        if (y + th > window.innerHeight - 8) y = window.innerHeight - th - 8;
+        if (y < 8) y = 8;
+        tip.style.left = x + 'px';
+        tip.style.top  = y + 'px';
+      }
+
+      document.addEventListener('mouseover', function (e) {
+        const wrap = e.target.closest && e.target.closest('.film-poster-wrap[data-poster-lg]');
+        if (!wrap) return;
+        tipImg.src = wrap.dataset.posterLg;
+        placeTip(wrap);
+        tip.style.display = 'block';
+      });
+
+      document.addEventListener('mouseout', function (e) {
+        const wrap = e.target.closest && e.target.closest('.film-poster-wrap[data-poster-lg]');
+        if (wrap && !wrap.contains(e.relatedTarget)) tip.style.display = 'none';
+      });
     })();
   </script>
 
