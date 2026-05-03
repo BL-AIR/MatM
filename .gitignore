@@ -1,1 +1,11 @@
 streaming/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Working documents (not for the website)
+MatM_Episodes_Transcripts.docx
+MatM_Episodes_Index.xlsx
+NEW-EPISODE-CHECKLIST.md
+STRATEGY.md
