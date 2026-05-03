@@ -45,7 +45,7 @@ DNS changes can take up to 24 hours to propagate. Once live, GitHub Pages will a
 
 All content is in `index.html`. To add a new review, copy one of the existing `.review-card` blocks and update the year, title, director, stars, and excerpt.
 
-The portrait photo is `Madeleine-Swain.jpg` in the repo root, already wired into the About section.
+The portrait photo is `images/Madeleine-Swain.jpg`, already wired into the About section.
 
 ---
 
