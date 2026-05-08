@@ -702,6 +702,7 @@
 
     .player-close:hover { color: var(--gold); }
 
+    #player-prev-chapter,
     #player-next-chapter {
       font-size: 0.68rem;
       width: auto;
@@ -992,9 +993,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="player-episode" id="player-episode"></p>
         <p class="player-films" id="player-films"></p>
       </div>
+      <button class="player-btn" id="player-prev-chapter" title="Previous review">⏮</button>
       <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
       <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
-      <button class="player-btn" id="player-next-chapter" title="Skip to next review">⏭</button>
+      <button class="player-btn" id="player-next-chapter" title="Next review">⏭</button>
       <div class="player-progress-wrap">
         <div class="player-progress" id="player-progress">
           <div class="player-progress-fill" id="player-progress-fill"></div>
@@ -1021,6 +1023,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const captionEl      = document.getElementById('player-caption');
     const epLabel        = document.getElementById('player-episode');
     const filmsLabel     = document.getElementById('player-films');
+    const prevChapterBtn = document.getElementById('player-prev-chapter');
     const nextChapterBtn = document.getElementById('player-next-chapter');
 
     let cues = [];
