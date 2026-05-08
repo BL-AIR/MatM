@@ -939,14 +939,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script>
     function checkOnAir() {
-      // Use Melbourne time (Australia/Melbourne handles AEDT/AEST automatically)
-      const now = new Date();
-      const melb = new Date(now.toLocaleString('en-AU', { timeZone: 'Australia/Melbourne' }));
-      const day  = melb.getDay();   // 0=Sun, 2=Tue, 5=Fri
-      const hour = melb.getHours();
-      const min  = melb.getMinutes();
-      const totalMin = hour * 60 + min;
-      const onAir = (day === 2 || day === 5) && totalMin >= 730 && totalMin < 745; // 12:10–12:25
+      // Use Melbourne time via Intl.DateTimeFormat.formatToParts — avoids the
+      // ambiguous date-string parsing bug in new Date(toLocaleString('en-AU',...))
+      // where '08/05/2026' gets read as August 5 (US order) instead of 8 May.
+      const now   = new Date();
+      const parts = Object.fromEntries(
+        new Intl.DateTimeFormat('en-AU', {
+          timeZone: 'Australia/Melbourne',
+          weekday: 'short',
+          hour: '2-digit', minute: '2-digit', hour12: false
+        }).formatToParts(now).map(({ type, value }) => [type, value])
+      );
+      const weekday  = parts.weekday;                              // 'Tue', 'Fri', etc.
+      const totalMin = parseInt(parts.hour) * 60 + parseInt(parts.minute);
+      const onAir    = (weekday === 'Tue' || weekday === 'Fri') && totalMin >= 730 && totalMin < 745; // 12:10–12:25
 
       // Update the listen-live panel
       document.getElementById('listen-live-wrap').style.display = onAir ? 'block' : 'none';

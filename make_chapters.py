@@ -36,6 +36,7 @@ OUTPUT
 import json
 import re
 import sys
+import urllib.request
 from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────────
@@ -43,6 +44,9 @@ from pathlib import Path
 HERE       = Path(__file__).parent
 STREAMING  = HERE / "streaming"
 INDEX_HTML = HERE / "index.html"
+
+# Public R2 base URL — used to fetch VTTs that aren't stored locally.
+R2_BASE = "https://pub-fca72aca0d2a44489ca717888abac149.r2.dev"
 
 # Seconds of buffer added after the sign-off cue ends before starting the
 # next chapter — lands in the brief silence after the ratings/runtime line.
