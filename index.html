@@ -993,8 +993,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="player-episode" id="player-episode"></p>
         <p class="player-films" id="player-films"></p>
       </div>
-      <button class="player-btn" id="player-prev-chapter" title="Previous review">⏮</button>
       <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
+      <button class="player-btn" id="player-prev-chapter" title="Previous review">⏮</button>
       <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
       <button class="player-btn" id="player-next-chapter" title="Next review">⏭</button>
       <div class="player-progress-wrap">
@@ -1063,6 +1063,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       captionEl.textContent  = '';
       cues = [];
       chapters = [];
+      prevChapterBtn.style.display = 'none';
       nextChapterBtn.style.display = 'none';
 
       audioEl.innerHTML = '';
@@ -1094,7 +1095,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const cr = await fetch(base + '.chapters.vtt');
         if (cr.ok) {
           chapters = parseVTT(await cr.text());
-          if (chapters.length > 1) nextChapterBtn.style.display = '';
+          if (chapters.length > 1) {
+            prevChapterBtn.style.display = '';
+            nextChapterBtn.style.display = '';
+          }
         }
       } catch(e) {}
     }
@@ -1104,8 +1108,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const next = chapters.find(c => c.start > cur + 1);
       if (next) audioEl.currentTime = next.start;
     }
+    function skipToPrevChapter() {
+      const cur = audioEl.currentTime;
+      // If we're more than 3 s into the current chapter, restart it;
+      // otherwise jump to the start of the previous chapter.
+      const reversed = [...chapters].reverse();
+      const active = reversed.find(c => c.start <= cur);
+      if (active && cur - active.start > 3) {
+        audioEl.currentTime = active.start;
+      } else {
+        const prev = reversed.find(c => c.start < (active ? active.start : cur) - 0.5);
+        if (prev) audioEl.currentTime = prev.start;
+      }
+    }
 
     nextChapterBtn.addEventListener('click', skipToNextChapter);
+    prevChapterBtn.addEventListener('click', skipToPrevChapter);
 
     playBtn.addEventListener('click', () => {
       if (audioEl.paused) { audioEl.play(); playBtn.textContent = '⏸'; }
