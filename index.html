@@ -702,6 +702,16 @@
 
     .player-close:hover { color: var(--gold); }
 
+    #player-next-chapter {
+      font-size: 0.68rem;
+      width: auto;
+      padding: 0 0.75rem;
+      border-radius: 2rem;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      display: none;
+    }
+
     .episode-card { cursor: pointer; }
     .episode-card:hover .episode-play-hint { opacity: 1; }
 
@@ -978,6 +988,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
       <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
+      <button class="player-btn" id="player-next-chapter" title="Skip to next review">⏭</button>
       <div class="player-progress-wrap">
         <div class="player-progress" id="player-progress">
           <div class="player-progress-fill" id="player-progress-fill"></div>
@@ -997,15 +1008,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const audioEl   = document.getElementById('player-audio');
     const playBtn   = document.getElementById('player-play');
     const backBtn   = document.getElementById('player-back');
-    const closeBtn  = document.getElementById('player-close');
-    const progressEl= document.getElementById('player-progress');
-    const fillEl    = document.getElementById('player-progress-fill');
-    const timeEl    = document.getElementById('player-time');
-    const captionEl = document.getElementById('player-caption');
-    const epLabel   = document.getElementById('player-episode');
-    const filmsLabel= document.getElementById('player-films');
+    const closeBtn       = document.getElementById('player-close');
+    const progressEl     = document.getElementById('player-progress');
+    const fillEl         = document.getElementById('player-progress-fill');
+    const timeEl         = document.getElementById('player-time');
+    const captionEl      = document.getElementById('player-caption');
+    const epLabel        = document.getElementById('player-episode');
+    const filmsLabel     = document.getElementById('player-films');
+    const nextChapterBtn = document.getElementById('player-next-chapter');
 
     let cues = [];
+    let chapters = [];
     let currentEpNum = null;
     let currentFilms = null;
     let milestonesReached = {};
@@ -1040,6 +1053,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       filmsLabel.textContent = films;
       captionEl.textContent  = '';
       cues = [];
+      chapters = [];
+      nextChapterBtn.style.display = 'none';
 
       audioEl.innerHTML = '';
       [['audio/webm; codecs=opus', '.webm'], ['audio/mp4', '.m4a']].forEach(([type, ext]) => {
@@ -1065,7 +1080,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const res = await fetch(base + '.vtt');
         if (res.ok) cues = parseVTT(await res.text());
       } catch(e) {}
+
+      try {
+        const cr = await fetch(base + '.chapters.vtt');
+        if (cr.ok) {
+          chapters = parseVTT(await cr.text());
+          if (chapters.length > 1) nextChapterBtn.style.display = '';
+        }
+      } catch(e) {}
     }
+
+    function skipToNextChapter() {
+      const cur = audioEl.currentTime;
+      const next = chapters.find(c => c.start > cur + 1);
+      if (next) audioEl.currentTime = next.start;
+    }
+
+    nextChapterBtn.addEventListener('click', skipToNextChapter);
 
     playBtn.addEventListener('click', () => {
       if (audioEl.paused) { audioEl.play(); playBtn.textContent = '⏸'; }
@@ -1088,6 +1119,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       timeEl.textContent = fmt(cur) + ' / ' + fmt(dur);
       const cue = cues.find(c => cur >= c.start && cur <= c.end);
       captionEl.textContent = cue ? cue.text : '';
+
+      // Show current chapter name in the films label while a chapter is active
+      if (chapters.length > 0) {
+        const activeChapter = [...chapters].reverse().find(c => cur >= c.start);
+        filmsLabel.textContent = activeChapter ? activeChapter.text : currentFilms;
+      }
 
       // GA4: track listen milestones at 25%, 50%, 75%
       if (dur > 0 && currentEpNum !== null) {
