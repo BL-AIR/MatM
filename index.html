@@ -1096,8 +1096,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (cr.ok) {
           chapters = parseVTT(await cr.text());
           if (chapters.length > 1) {
-            prevChapterBtn.style.display = '';
-            nextChapterBtn.style.display = '';
+            prevChapterBtn.style.display = 'flex';
+            nextChapterBtn.style.display = 'flex';
           }
         }
       } catch(e) {}
