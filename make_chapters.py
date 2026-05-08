@@ -20,17 +20,31 @@ USAGE
   # Re-generate (overwrite existing chapters files):
   python3 make_chapters.py --force
 
+  # Upload generated chapters files to R2 (append --upload):
+  python3 make_chapters.py --upload
+  python3 make_chapters.py MatM_0721 --upload
+
 Run from the MatM/MatM/ folder (same location as convert.sh).
 
 SKIPPED AUTOMATICALLY
 ---------------------
   - Episodes with 0 or 1 film titles (festivals, year reviews, "Best of" specials)
-  - Episodes with no VTT file in streaming/
+  - Episodes with no VTT file in streaming/ (and not on R2)
   - Episodes that already have a .chapters.vtt (unless --force)
 
 OUTPUT
 ------
   streaming/MatM_XXXX.chapters.vtt
+  (optionally uploaded to the matm-audio R2 bucket with --upload)
+
+CREDENTIALS
+-----------
+  Reads from the first file found among:
+    ../. r2_credentials   (parent MatM folder — recommended, outside git)
+    .r2_credentials        (same folder as this script)
+  Each line: KEY=VALUE  (lines starting with # are ignored)
+  Required keys: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+                 R2_ENDPOINT_URL, R2_BUCKET
 """
 
 import json
@@ -47,6 +61,9 @@ INDEX_HTML = HERE / "index.html"
 
 # Public R2 base URL — used to fetch VTTs that aren't stored locally.
 R2_BASE = "https://pub-fca72aca0d2a44489ca717888abac149.r2.dev"
+
+# Credentials file search path (first match wins).
+CREDS_SEARCH = [HERE.parent / ".r2_credentials", HERE / ".r2_credentials"]
 
 # Seconds of buffer added after the sign-off cue ends before starting the
 # next chapter — lands in the brief silence after the ratings/runtime line.
@@ -174,6 +191,62 @@ def write_chapters_vtt(path: Path, chapters: list[dict]) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+# ── R2 upload helpers ──────────────────────────────────────────────────────────
+
+def load_r2_credentials() -> dict | None:
+    """
+    Load R2 credentials from the first credentials file found in CREDS_SEARCH.
+    Returns a dict with R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT_URL,
+    R2_BUCKET — or None if no credentials file exists.
+    """
+    for path in CREDS_SEARCH:
+        if path.exists():
+            creds = {}
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                creds[k.strip()] = v.strip()
+            return creds
+    return None
+
+
+def make_r2_client(creds: dict):
+    """Return a boto3 S3 client configured for the R2 bucket."""
+    try:
+        import boto3
+    except ImportError:
+        print("  ERROR: boto3 not installed — run: pip install boto3 --break-system-packages")
+        sys.exit(1)
+    return boto3.client(
+        "s3",
+        endpoint_url=creds["R2_ENDPOINT_URL"],
+        aws_access_key_id=creds["R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=creds["R2_SECRET_ACCESS_KEY"],
+        region_name="auto",
+    )
+
+
+def upload_to_r2(local_path: Path, creds: dict, verbose: bool = True) -> bool:
+    """Upload a single file to R2. Returns True on success."""
+    client = make_r2_client(creds)
+    key = local_path.name
+    try:
+        client.upload_file(
+            str(local_path),
+            creds["R2_BUCKET"],
+            key,
+            ExtraArgs={"ContentType": "text/vtt"},
+        )
+        if verbose:
+            print(f"     ↑  Uploaded → {key}")
+        return True
+    except Exception as e:
+        if verbose:
+            print(f"     ✗  Upload failed for {key}: {e}")
+        return False
+
+
 # ── Per-episode processing ─────────────────────────────────────────────────────
 
 def process_episode(
@@ -181,9 +254,13 @@ def process_episode(
     titles:   list[str],
     force:    bool = False,
     verbose:  bool = True,
+    upload:   bool = False,
+    r2_creds: dict | None = None,
 ) -> str:
     """
     Process one episode. Returns 'ok', 'skip', or 'fail'.
+    If upload=True and r2_creds is provided, the generated chapters file
+    is uploaded to R2 immediately after being written.
     """
     tag      = f"MatM_{ep_num:04d}"
     vtt_path = STREAMING / f"{tag}.vtt"
@@ -227,19 +304,40 @@ def process_episode(
         log(f"     [{secs_to_vtt(ch['start'])[3:]}]  {ch['title']}")
 
     log(f"     ✓  Written → {out_path.name}")
+
+    if upload and r2_creds:
+        upload_to_r2(out_path, r2_creds, verbose=verbose)
+
     return "ok"
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def main():
-    args  = sys.argv[1:]
-    force = "--force" in args
-    args  = [a for a in args if a != "--force"]
+    args   = sys.argv[1:]
+    force  = "--force"  in args
+    upload = "--upload" in args
+    args   = [a for a in args if a not in ("--force", "--upload")]
+
+    # Load R2 credentials if upload was requested.
+    r2_creds = None
+    if upload:
+        r2_creds = load_r2_credentials()
+        if not r2_creds:
+            print()
+            print("  ERROR: --upload requested but no credentials file found.")
+            print("  Expected one of:")
+            for p in CREDS_SEARCH:
+                print(f"    {p}")
+            print()
+            sys.exit(1)
 
     print()
     print("  MatM Chapter Generator")
     print("  ──────────────────────────────────────────────────")
+    if upload:
+        print(f"  Upload mode ON — bucket: {r2_creds.get('R2_BUCKET', '?')}")
+        print()
 
     # Load episode database from index.html
     try:
@@ -281,7 +379,7 @@ def main():
 
         ok = skip = fail = 0
         for ep_num, titles in candidates:
-            result = process_episode(ep_num, titles, force=force)
+            result = process_episode(ep_num, titles, force=force, upload=upload, r2_creds=r2_creds)
             if result == "ok":
                 ok += 1
             elif result == "skip":
@@ -316,7 +414,7 @@ def main():
             print()
             sys.exit(0)
 
-    result = process_episode(ep_num, titles, force=force)
+    result = process_episode(ep_num, titles, force=force, upload=upload, r2_creds=r2_creds)
     print()
     sys.exit(0 if result in ("ok", "skip") else 1)
 
