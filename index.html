@@ -1265,7 +1265,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const TMDB_KEY  = 'bddb259b85eb28cc52cb8df97987050e';
       const TMDB_BASE = 'https://api.themoviedb.org/3';
       const IMG_BASE  = 'https://image.tmdb.org/t/p/w92';
-      const CACHE_KEY = 'matm_tmdb_v4'; // bump version to clear old cache
+      const CACHE_KEY = 'matm_tmdb_v5'; // bump version to clear old cache
+      const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days in ms
 
       // ── Override tables ─────────────────────────────
       // Titles that should never be looked up (specials, festivals, roundups).
@@ -1317,12 +1318,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       function getCache() {
-        try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}'); }
-        catch (e) { return {}; }
+        try {
+          const raw = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+          if (raw._saved && (Date.now() - raw._saved) > CACHE_TTL) return {};
+          return raw;
+        } catch (e) { return {}; }
       }
       function saveCache(c) {
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(c)); }
-        catch (e) {}
+        try {
+          c._saved = c._saved || Date.now();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(c));
+        } catch (e) {}
       }
 
       // Strip trailing punctuation before searching
