@@ -771,7 +771,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#episodes" class="hero-cta">Listen to the Episodes</a>
   </section>
 
-  <div class="filmstrip" style="position:relative;"><div onclick="togglePreview(this)" style="position:absolute;right:20px;top:0;width:12px;height:100%;cursor:default;z-index:2;"></div></div>
+  <div class="filmstrip" style="position:relative;"><div id="sprocket-key" onclick="togglePreview()" style="position:absolute;left:60px;top:0;width:12px;height:100%;cursor:default;z-index:2;"></div></div>
 
   <!-- About -->
   <section id="about">
@@ -841,9 +841,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       recorded.setHours(0, 0, 0, 0);
       return (_embargoToday - recorded) >= 7 * 24 * 60 * 60 * 1000;
     });
-    function togglePreview(el) {
+    function togglePreview() {
       localStorage.setItem('matm_preview', _previewMode ? '0' : '1');
-      el.style.background = 'var(--gold)';
+      const el = document.getElementById('sprocket-key');
+      if (el) { el.style.background = 'var(--gold)'; }
       setTimeout(() => location.reload(), 300);
     }
 
