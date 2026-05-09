@@ -193,7 +193,7 @@ def write_chapters_vtt(path: Path, chapters: list[dict]) -> None:
 
 # ── R2 upload helpers ──────────────────────────────────────────────────────────
 
-def load_r2_credentials() -> dict | None:
+def load_r2_credentials() -> "dict | None":
     """
     Load R2 credentials from the first credentials file found in CREDS_SEARCH.
     Returns a dict with R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT_URL,
@@ -255,7 +255,7 @@ def process_episode(
     force:    bool = False,
     verbose:  bool = True,
     upload:   bool = False,
-    r2_creds: dict | None = None,
+    r2_creds: "dict | None" = None,
 ) -> str:
     """
     Process one episode. Returns 'ok', 'skip', or 'fail'.
