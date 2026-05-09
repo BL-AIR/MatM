@@ -771,7 +771,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#episodes" class="hero-cta">Listen to the Episodes</a>
   </section>
 
-  <div class="filmstrip"></div>
+  <div class="filmstrip" style="position:relative;"><div onclick="togglePreview(this)" style="position:absolute;right:20px;top:0;width:12px;height:100%;cursor:default;z-index:2;"></div></div>
 
   <!-- About -->
   <section id="about">
@@ -832,13 +832,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Episodes are withheld for 7 days after the recorded date to give
     // Golden Days Radio exclusive first broadcast. An episode becomes
     // visible on the website only when: today >= recordedDate + 7 days.
+    // Secret sprocket on the first filmstrip toggles preview mode (localStorage).
     const _embargoToday = new Date();
     _embargoToday.setHours(0, 0, 0, 0);
-    const PUBLISHED_EPISODES = EPISODES.filter(e => {
+    const _previewMode = localStorage.getItem('matm_preview') === '1';
+    const PUBLISHED_EPISODES = _previewMode ? EPISODES : EPISODES.filter(e => {
       const recorded = new Date(e.date);
       recorded.setHours(0, 0, 0, 0);
       return (_embargoToday - recorded) >= 7 * 24 * 60 * 60 * 1000;
     });
+    function togglePreview(el) {
+      localStorage.setItem('matm_preview', _previewMode ? '0' : '1');
+      el.style.background = 'var(--gold)';
+      setTimeout(() => location.reload(), 300);
+    }
 
     const PER_PAGE = 24;
     let filtered = PUBLISHED_EPISODES;
