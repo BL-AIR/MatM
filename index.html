@@ -1241,19 +1241,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (target) {
               const seekTo = target.start;
               const doSeek = () => {
-                if (!audioEl.paused) {
-                  // Already playing — seek directly, playback continues
-                  audioEl.currentTime = seekTo;
-                } else {
-                  // Not playing yet — play first, then seek once play resolves
-                  audioEl.play().then(() => {
-                    audioEl.currentTime = seekTo;
-                  }).catch(() => {
-                    // Autoplay blocked — seek to position and let user press play
-                    audioEl.currentTime = seekTo;
-                    playBtn.textContent = '▶';
-                  });
-                }
+                audioEl.currentTime = seekTo;
+                audioEl.pause();
+                playBtn.textContent = '▶';
               };
               if (audioEl.readyState >= 1) {
                 doSeek();
