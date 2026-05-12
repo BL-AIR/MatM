@@ -1233,6 +1233,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             prevChapterBtn.style.display = 'flex';
             nextChapterBtn.style.display = 'flex';
           }
+          // Deep-link: seek to requested chapter if one is pending
+          if (window._pendingChapter) {
+            const target = chapters.find(c =>
+              c.text.toLowerCase().trim() === window._pendingChapter.toLowerCase().trim()
+            );
+            if (target) audioEl.currentTime = target.start;
+            window._pendingChapter = null;
+          }
         }
       } catch(e) {}
     }
@@ -1450,6 +1458,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         feedbackSubmit.textContent   = 'Send';
       }
     });
+
+    // ── Deep-link URL parameter support ───────────────────────────────────────
+    // Supports: ?ep=42&chapter=Sinners
+    // Loads the episode and seeks to the named chapter once chapters are loaded.
+    (function () {
+      const params  = new URLSearchParams(window.location.search);
+      const epParam = params.get('ep');
+      const chParam = params.get('chapter');
+      if (!epParam) return;
+
+      const epNum = parseInt(epParam);
+      if (isNaN(epNum)) return;
+
+      // Find the episode card to get the films string, fall back to empty string
+      const card = document.querySelector(`.episode-card[data-ep="${epNum}"]`) ||
+                   [...document.querySelectorAll('.episode-card')].find(c => {
+                     const t = c.querySelector('.episode-number')?.textContent || '';
+                     return parseInt(t.replace(/\D/g, '')) === epNum;
+                   });
+
+      const films = card
+        ? Array.from(card.querySelectorAll('.episode-films li')).map(li => li.textContent.trim()).join(' · ')
+        : '';
+
+      // Store the requested chapter so loadEpisode can seek after VTT loads
+      window._pendingChapter = chParam || null;
+
+      loadEpisode(epNum, films);
+    })();
 
     // Wire episode cards
     document.querySelectorAll('.episode-card').forEach(card => {
