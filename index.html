@@ -1118,7 +1118,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="player-episode" id="player-episode"></p>
         <p class="player-films" id="player-films"></p>
       </div>
-      <button class="player-btn" id="player-feedback" title="Leave feedback">✍</button>
+      <button class="player-btn" id="player-feedback" title="Leave feedback">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
       <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
       <button class="player-btn" id="player-prev-chapter" title="Previous review">⏮</button>
       <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
@@ -1384,7 +1388,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.getElementById('fb-chapter').value = snapChapter;
       document.getElementById('fb-time').value    = snapTime;
       document.getElementById('fb-subject').value =
-        snapEp ? `Listener Feedback — Ep ${snapEp} · ${snapChapter}` : 'Listener Feedback';
+        snapChapter ? `MatM Feedback: ${snapChapter}` : 'MatM Feedback';
 
       feedbackCtx.textContent = snapEp
         ? `Ep ${snapEp}  ·  ${snapChapter}  ·  ${snapTime}`
