@@ -92,7 +92,8 @@ export default {
       );
 
       const fullText = chapterCues.map(c => c.text).join(' ');
-      excerpt = fullText.replace(/\s+/g, ' ').trim();
+      excerpt = fullText.replace(/\s+/g, ' ').trim()
+                        .replace(/\bMadeline\b/g, 'Madeleine');
     } catch {}
 
     if (!excerpt) {

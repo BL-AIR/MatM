@@ -1238,7 +1238,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const target = chapters.find(c =>
               c.text.toLowerCase().trim() === window._pendingChapter.toLowerCase().trim()
             );
-            if (target) audioEl.currentTime = target.start;
+            if (target) {
+              const seekTo = target.start;
+              if (audioEl.readyState >= 1) {
+                audioEl.currentTime = seekTo;
+              } else {
+                audioEl.addEventListener('loadedmetadata', () => {
+                  audioEl.currentTime = seekTo;
+                }, { once: true });
+              }
+            }
             window._pendingChapter = null;
           }
         }
