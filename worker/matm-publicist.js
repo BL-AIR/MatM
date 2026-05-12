@@ -115,6 +115,8 @@ export default {
       deepLink,
     });
 
+    console.log('RESEND_KEY_LENGTH:', env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 'UNDEFINED');
+    console.log('RESEND_KEY_PREFIX:', env.RESEND_API_KEY ? env.RESEND_API_KEY.substring(0, 8) : 'NONE');
     try {
       const resendRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
