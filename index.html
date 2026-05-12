@@ -1404,7 +1404,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.addEventListener('click', e => {
       if (feedbackModal.classList.contains('open') &&
           !feedbackModal.contains(e.target) &&
-          e.target !== feedbackBtn) {
+          !feedbackBtn.contains(e.target)) {
         closeFeedbackModal();
       }
     });
