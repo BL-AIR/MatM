@@ -236,7 +236,12 @@ function buildEmail({ chapter, episode, excerpt, deepLink, reviewDate }) {
   <hr style="border:none;border-top:1px solid #e8e0cc;margin:0 0 20px;">
 
   <h3 style="font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#999;margin:0 0 10px;">Terms of Use</h3>
-  <p style="font-size:13px;line-height:1.7;color:#444;">[Terms and conditions &mdash; to be inserted]</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;">The transcript excerpt provided through this service is made available exclusively for promotional and editorial use in connection with the film reviewed. By requesting and using this transcript, you agree to the following conditions.</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;"><strong>Attribution.</strong> Any use of the excerpt must be accompanied by a clear credit reading: <em>Madeleine at the Movies, Golden Days Radio 95.7FM Melbourne</em> along with a link to the review &mdash; either to the homepage at matm.com.au, or directly to the film review via the coded link provided in this email.</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;"><strong>Accuracy.</strong> Transcripts are generated using an AI transcription tool and may contain errors, mishearings, or incorrect proper nouns. It is your responsibility to verify the text for accuracy before publication.</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;"><strong>Permitted use.</strong> The excerpt may be used in press releases, media kits, promotional copy, and editorial coverage of the reviewed film. It may not be used out of context, edited to alter the meaning of the review, or presented in a way that misrepresents Madeleine Swain&rsquo;s opinion.</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;"><strong>No endorsement.</strong> Receipt of a transcript does not constitute an endorsement of any product, campaign, or organisation beyond the review itself.</p>
+  <p style="font-size:13px;line-height:1.7;color:#444;"><strong>Enquiries.</strong> For permissions beyond the scope of these terms, or to request a correction, contact <a href="mailto:Madeleine@matm.com.au" style="color:#c9a84c;">Madeleine@matm.com.au</a>.</p>
 
   <hr style="border:none;border-top:1px solid #e8e0cc;margin:24px 0 16px;">
 
@@ -267,7 +272,17 @@ Online attribution link to the review:
 ${deepLink}
 
 TERMS OF USE
-[Terms and conditions — to be inserted]
+The transcript excerpt provided through this service is made available exclusively for promotional and editorial use in connection with the film reviewed. By requesting and using this transcript, you agree to the following conditions.
+
+Attribution. Any use of the excerpt must be accompanied by a clear credit reading: Madeleine at the Movies, Golden Days Radio 95.7FM Melbourne along with a link to the review — either to the homepage at matm.com.au, or directly to the film review via the coded link provided in this email.
+
+Accuracy. Transcripts are generated using an AI transcription tool and may contain errors, mishearings, or incorrect proper nouns. It is your responsibility to verify the text for accuracy before publication.
+
+Permitted use. The excerpt may be used in press releases, media kits, promotional copy, and editorial coverage of the reviewed film. It may not be used out of context, edited to alter the meaning of the review, or presented in a way that misrepresents Madeleine Swain's opinion.
+
+No endorsement. Receipt of a transcript does not constitute an endorsement of any product, campaign, or organisation beyond the review itself.
+
+Enquiries. For permissions beyond the scope of these terms, or to request a correction, contact Madeleine@matm.com.au.
 
 DISCLAIMER
 This transcript was produced using an AI transcription tool.
