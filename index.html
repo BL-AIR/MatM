@@ -702,6 +702,98 @@
 
     .player-close:hover { color: var(--gold); }
 
+    /* ── Feedback Button ──────────────────────────────── */
+    #player-feedback {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    /* ── Feedback Modal ───────────────────────────────── */
+    #feedback-modal {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: min(380px, 90vw);
+      z-index: 300;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.6);
+    }
+    #feedback-modal.open { display: block; }
+    .feedback-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      margin: 0 0 0.2rem;
+    }
+    .feedback-context {
+      font-size: 0.7rem;
+      color: var(--grey);
+      margin: 0 0 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .feedback-field {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.65rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .feedback-field:focus { outline: none; border-color: var(--gold); }
+    .feedback-field::placeholder { color: var(--grey); opacity: 1; }
+    textarea.feedback-field { resize: vertical; min-height: 80px; }
+    .feedback-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.25rem;
+    }
+    .feedback-submit {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .feedback-submit:hover { opacity: 0.85; }
+    .feedback-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .feedback-cancel {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .feedback-cancel:hover { border-color: var(--gold); color: var(--gold); }
+    .feedback-status {
+      font-size: 0.78rem;
+      margin-top: 0.6rem;
+      text-align: center;
+      display: none;
+    }
+
     #player-prev-chapter,
     #player-next-chapter {
       font-size: 0.68rem;
@@ -993,6 +1085,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   </style>
 
+  <!-- Feedback Modal -->
+  <div id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+    <p class="feedback-title" id="feedback-title">Leave Feedback</p>
+    <p class="feedback-context" id="feedback-context"></p>
+    <form id="feedback-form" novalidate>
+      <!-- Web3Forms: replace access_key value with key from web3forms.com (registered to blair@prahran.press) -->
+      <input type="hidden" name="access_key"  value="8c3825db-dbdc-43c2-968e-9c34c3206bd2">
+      <input type="hidden" name="from_name"   value="MATM Listener Feedback">
+      <input type="hidden" name="subject"     id="fb-subject">
+      <input type="hidden" name="episode"     id="fb-episode">
+      <input type="hidden" name="film_review" id="fb-chapter">
+      <input type="hidden" name="time_marker" id="fb-time">
+      <!-- Honeypot — leave empty; bots fill it and submissions are rejected -->
+      <input type="checkbox" name="botcheck" style="display:none">
+      <input  class="feedback-field" type="text"  name="first_name" placeholder="First name"    required>
+      <input  class="feedback-field" type="email" name="email"      placeholder="Email address" required>
+      <textarea class="feedback-field"            name="feedback"   placeholder="Your feedback…" required></textarea>
+      <div class="feedback-actions">
+        <button type="button" class="feedback-cancel" id="feedback-cancel">Cancel</button>
+        <button type="submit" class="feedback-submit" id="feedback-submit">Send</button>
+      </div>
+      <p class="feedback-status" id="feedback-status"></p>
+    </form>
+  </div>
+
   <!-- Audio Player -->
   <div id="matm-player">
     <div class="player-caption" id="player-caption"></div>
@@ -1001,6 +1118,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="player-episode" id="player-episode"></p>
         <p class="player-films" id="player-films"></p>
       </div>
+      <button class="player-btn" id="player-feedback" title="Leave feedback">✍</button>
       <button class="player-btn" id="player-back" title="Back 10 seconds">↺</button>
       <button class="player-btn" id="player-prev-chapter" title="Previous review">⏮</button>
       <button class="player-btn" id="player-play" title="Play / Pause">▶</button>
@@ -1245,6 +1363,88 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     progressEl.addEventListener('click', e => {
       const r = progressEl.getBoundingClientRect();
       audioEl.currentTime = ((e.clientX - r.left) / r.width) * (audioEl.duration || 0);
+    });
+
+    // ── Listener Feedback ─────────────────────────────────
+    const feedbackBtn    = document.getElementById('player-feedback');
+    const feedbackModal  = document.getElementById('feedback-modal');
+    const feedbackForm   = document.getElementById('feedback-form');
+    const feedbackCancel = document.getElementById('feedback-cancel');
+    const feedbackCtx    = document.getElementById('feedback-context');
+    const feedbackStatus = document.getElementById('feedback-status');
+    const feedbackSubmit = document.getElementById('feedback-submit');
+
+    feedbackBtn.addEventListener('click', () => {
+      // Snapshot state at the exact moment the button is pressed — these do not update
+      const snapEp      = currentEpNum;
+      const snapChapter = chapterTrackTitle || currentFilms || '—';
+      const snapTime    = fmt(audioEl.currentTime);
+
+      document.getElementById('fb-episode').value = snapEp ? 'Ep ' + snapEp : '—';
+      document.getElementById('fb-chapter').value = snapChapter;
+      document.getElementById('fb-time').value    = snapTime;
+      document.getElementById('fb-subject').value =
+        snapEp ? `Listener Feedback — Ep ${snapEp} · ${snapChapter}` : 'Listener Feedback';
+
+      feedbackCtx.textContent = snapEp
+        ? `Ep ${snapEp}  ·  ${snapChapter}  ·  ${snapTime}`
+        : '';
+
+      feedbackModal.classList.add('open');
+      feedbackForm.querySelector('[name="first_name"]').focus();
+    });
+
+    feedbackCancel.addEventListener('click', closeFeedbackModal);
+
+    // Close modal if user clicks outside it
+    document.addEventListener('click', e => {
+      if (feedbackModal.classList.contains('open') &&
+          !feedbackModal.contains(e.target) &&
+          e.target !== feedbackBtn) {
+        closeFeedbackModal();
+      }
+    });
+
+    function closeFeedbackModal() {
+      feedbackModal.classList.remove('open');
+      feedbackForm.reset();
+      feedbackStatus.style.display = 'none';
+      feedbackStatus.textContent = '';
+      feedbackSubmit.disabled = false;
+      feedbackSubmit.textContent = 'Send';
+    }
+
+    feedbackForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      feedbackSubmit.disabled = true;
+      feedbackSubmit.textContent = 'Sending…';
+
+      try {
+        const payload = {};
+        new FormData(feedbackForm).forEach((v, k) => payload[k] = v);
+
+        const res  = await fetch('https://api.web3forms.com/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          feedbackStatus.textContent     = 'Thank you — your feedback has been sent.';
+          feedbackStatus.style.color    = 'var(--gold)';
+          feedbackStatus.style.display  = 'block';
+          setTimeout(closeFeedbackModal, 2500);
+        } else {
+          throw new Error(data.message || 'Submission failed');
+        }
+      } catch (err) {
+        feedbackStatus.textContent    = 'Something went wrong. Please try again.';
+        feedbackStatus.style.color   = '#ff6666';
+        feedbackStatus.style.display = 'block';
+        feedbackSubmit.disabled      = false;
+        feedbackSubmit.textContent   = 'Send';
+      }
     });
 
     // Wire episode cards
