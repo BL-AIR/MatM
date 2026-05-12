@@ -1241,8 +1241,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (target) {
               const seekTo = target.start;
               const doSeek = () => {
+                audioEl.addEventListener('seeked', () => {
+                  audioEl.play().catch(() => {});
+                }, { once: true });
                 audioEl.currentTime = seekTo;
-                audioEl.play().catch(() => {});
               };
               if (audioEl.readyState >= 1) {
                 doSeek();
