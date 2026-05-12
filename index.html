@@ -1240,12 +1240,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             );
             if (target) {
               const seekTo = target.start;
-              if (audioEl.readyState >= 1) {
+              const doSeek = () => {
                 audioEl.currentTime = seekTo;
+                audioEl.play().catch(() => {});
+              };
+              if (audioEl.readyState >= 1) {
+                doSeek();
               } else {
-                audioEl.addEventListener('loadedmetadata', () => {
-                  audioEl.currentTime = seekTo;
-                }, { once: true });
+                audioEl.addEventListener('loadedmetadata', doSeek, { once: true });
               }
             }
             window._pendingChapter = null;
