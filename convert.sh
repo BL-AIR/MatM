@@ -2,14 +2,13 @@
 # ============================================================
 #  MatM Audio Batch Converter
 #  Converts broadcast MP3s to web-streaming formats and
-#  generates VTT caption files + plain-text transcripts from
-#  any matching SRT files found in the Scripts folder.
+#  generates VTT caption files from any matching SRT files
+#  found in the Scripts folder.
 #
 #  Outputs per episode (into the streaming/ folder):
 #    MatM_XXXX.webm  — Opus audio (primary, ~48 kbps)
 #    MatM_XXXX.m4a   — AAC audio  (Safari/iOS fallback, ~64 kbps)
 #    MatM_XXXX.vtt   — WebVTT captions (if SRT exists)
-#    MatM_XXXX.txt   — Plain-text transcript (if SRT exists)
 #
 #  Safe to re-run: already-converted files are skipped.
 # ============================================================
@@ -75,7 +74,7 @@ for mp3 in "$SOURCE"/*.mp3; do
     echo "     — AAC   already exists, skipping"
   fi
 
-  # 3. SRT → VTT + plain text (only if a matching SRT exists)
+  # 3. SRT → VTT (only if a matching SRT exists)
   srt_file="$SCRIPTS/${filename}.srt"
   if [ -f "$srt_file" ]; then
     with_srt=$((with_srt + 1))
@@ -88,16 +87,6 @@ for mp3 in "$SOURCE"/*.mp3; do
       sed 's/\([0-9][0-9]:[0-9][0-9]:[0-9][0-9]\),\([0-9][0-9][0-9]\)/\1.\2/g' "$srt_file"
     } > "$vtt_out"
     echo "     ✓ VTT   → ${filename}.vtt"
-
-    # Plain text: strip sequence numbers, timestamps, and blank lines
-    txt_out="$OUTPUT/${filename}.txt"
-    grep -v '^[[:space:]]*[0-9][0-9]*[[:space:]]*$' "$srt_file" \
-      | grep -v '^[0-9][0-9]:[0-9][0-9]:[0-9][0-9],[0-9][0-9][0-9]' \
-      | sed '/^[[:space:]]*$/d' \
-      | tr '\n' ' ' \
-      | sed 's/  */ /g; s/^ //; s/ $//' \
-      > "$txt_out"
-    echo "     ✓ Text  → ${filename}.txt"
   fi
 
   converted=$((converted + 1))
@@ -108,7 +97,7 @@ done
 echo "  ────────────────────────────────────────────────────"
 echo "  Finished."
 echo "  Episodes processed : $converted of $total"
-echo "  With SRT/VTT/text  : $with_srt"
+echo "  With SRT/VTT       : $with_srt"
 echo "  Output folder      : $OUTPUT"
 echo "  ────────────────────────────────────────────────────"
 echo ""
