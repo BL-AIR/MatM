@@ -152,7 +152,7 @@ def step_whisper(mp3_path: Path, srt_path: Path) -> None:
     print(f"     Running Whisper on {mp3_path.name} …  (this takes a few minutes)")
 
     result = subprocess.run(
-        ["whisper", str(mp3_path),
+        [sys.executable, "-m", "whisper", str(mp3_path),
          "--output_format", "srt",
          "--language", "en",
          "--output_dir", str(SCRIPTS)],
@@ -418,8 +418,16 @@ def main():
     has_r2  = "R2_ACCESS_KEY_ID" in creds
 
     # Dependencies
-    require("ffmpeg",  "brew install ffmpeg")
-    require("whisper", "pip install openai-whisper --break-system-packages")
+    require("ffmpeg", "brew install ffmpeg")
+    # Whisper is checked via python import rather than PATH (pip may not add it to PATH)
+    try:
+        import importlib.util
+        if importlib.util.find_spec("whisper") is None:
+            raise ImportError
+    except ImportError:
+        print("\n  ERROR: 'whisper' not found.")
+        print("  Install it with: pip install openai-whisper --break-system-packages\n")
+        sys.exit(1)
 
     # Locate MP3
     mp3_path = SOURCE / f"{ep_tag}.mp3"
