@@ -9,5 +9,5 @@ compatibility_date = "2024-01-01"
 # Rate limiting: max 3 requests per 60 seconds per visitor IP.
 [[ratelimits]]
 name = "RATE_LIMITER"
-namespace_id = "1001"
+namespace_id = "999"   # matches the binding created in the Cloudflare dashboard
 simple = { limit = 3, period = 60 }
