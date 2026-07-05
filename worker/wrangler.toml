@@ -5,3 +5,9 @@ compatibility_date = "2024-01-01"
 # No R2 bindings needed — files are fetched from the public R2 URL.
 # Add RESEND_API_KEY as a secret via the Cloudflare dashboard or:
 #   npx wrangler secret put RESEND_API_KEY
+
+# Rate limiting: max 3 requests per 60 seconds per visitor IP.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }

@@ -19,8 +19,10 @@ const ALLOWED_ORIGINS = ['https://matm.com.au', 'http://localhost', 'http://127.
 
 export default {
   async fetch(request, env) {
-    const origin     = request.headers.get('Origin') || '';
-    const corsOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+    const origin = request.headers.get('Origin') || '';
+    // Origin matches if exact, or an allowed host plus a port (e.g. http://localhost:8080)
+    const originAllowed = ALLOWED_ORIGINS.some(o => origin === o || origin.startsWith(o + ':'));
+    const corsOrigin    = originAllowed ? origin : ALLOWED_ORIGINS[0];
 
     const corsHeaders = {
       'Access-Control-Allow-Origin':  corsOrigin,
@@ -35,6 +37,23 @@ export default {
 
     if (request.method !== 'POST') {
       return json({ error: 'Method not allowed' }, 405, corsHeaders);
+    }
+
+    // Reject requests that don't come from the website. Browsers always send
+    // an Origin header on cross-origin POSTs, so a missing or foreign Origin
+    // means a script or curl is calling directly — refuse to send email.
+    if (!originAllowed) {
+      return json({ error: 'Forbidden' }, 403, corsHeaders);
+    }
+
+    // Rate limit: max 3 requests per minute per visitor IP (binding in wrangler.toml).
+    // If the binding isn't configured yet, fail open rather than break the form.
+    if (env.RATE_LIMITER) {
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return json({ error: 'Too many requests. Please wait a minute and try again.' }, 429, corsHeaders);
+      }
     }
 
     // ── Parse body ──────────────────────────────────────────────────────────
