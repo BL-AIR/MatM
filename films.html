@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Held back from search until Blair approves the page. Remove both of these
-       (and the nav link can go into index.html) on the day it goes public. -->
-  <meta name="robots" content="noindex,nofollow" />
   <title>Film Index — Madeleine at the Movies</title>
   <meta name="description" content="Every film reviewed by Madeleine Swain on Golden Days Radio, browsable by genre, director and cast." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230c0c0c'/><rect x='2' y='4' width='4' height='5' rx='1' fill='white'/><rect x='2' y='13' width='4' height='5' rx='1' fill='white'/><rect x='2' y='22' width='4' height='5' rx='1' fill='white'/><rect x='26' y='4' width='4' height='5' rx='1' fill='white'/><rect x='26' y='13' width='4' height='5' rx='1' fill='white'/><rect x='26' y='22' width='4' height='5' rx='1' fill='white'/></svg>" />
@@ -52,11 +49,44 @@
     .sprocket-left  { left: 0; }
     .sprocket-right { right: 0; }
 
+    /* ── Navigation (matches index.html) ──────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(12, 12, 12, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: var(--gold);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: color 0.2s;
+    }
+    .nav-brand:hover { color: var(--gold-lt); }
+    .nav-brand .back { font-family: 'Lato', sans-serif; font-size: 0.95rem; line-height: 1; }
+    .nav-links { list-style: none; display: flex; gap: 2rem; margin: 0; padding: 0;
+                 font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links a { color: var(--grey); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a.here { color: var(--cream); }
+
     .wrap { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
 
     /* ── Header ───────────────────────────────────────── */
     header.page-head {
-      padding: 3.5rem 0 2rem;
+      padding: 6rem 0 2rem;
       text-align: center;
       border-bottom: 1px solid var(--border);
     }
@@ -82,7 +112,7 @@
     /* ── Filter bar ───────────────────────────────────── */
     .filters {
       position: sticky;
-      top: 0;
+      top: 60px;
       z-index: 30;
       background: rgba(12,12,12,0.96);
       backdrop-filter: blur(6px);
@@ -109,7 +139,7 @@
     .field::placeholder { color: #666; }
     select.field { cursor: pointer; }
 
-    .people-search { position: relative; flex: 1 1 260px; min-width: 200px; }
+    .people-search { position: relative; flex: 0 1 33%; min-width: 200px; }
     .people-search input { width: 100%; }
     .suggestions {
       display: none;
@@ -136,6 +166,79 @@
     .suggestion:hover, .suggestion.active { background: var(--mid); color: var(--gold-lt); }
     .suggestion .role { color: #666; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
     .suggestion .why { color: #6a6a6a; font-size: 0.7rem; font-style: italic; }
+
+    /* ── Episode date range ───────────────────────────── */
+    .range {
+      flex: 1 1 340px;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding: 0 0.2rem;
+    }
+    .range-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #666;
+    }
+    .range-head .val { color: var(--gold); letter-spacing: 0.06em; text-transform: none; font-size: 0.78rem; }
+    .range-head .reset {
+      background: none; border: none; color: #5e5e5e; cursor: pointer;
+      font: inherit; letter-spacing: 0.12em; text-transform: uppercase; padding: 0;
+    }
+    .range-head .reset:hover { color: var(--gold); }
+    .range-track {
+      position: relative;
+      height: 26px;
+    }
+    .range-rail {
+      position: absolute; top: 11px; left: 0; right: 0; height: 3px;
+      background: var(--border); border-radius: 2px;
+    }
+    .range-fill {
+      position: absolute; top: 11px; height: 3px;
+      background: var(--gold); border-radius: 2px;
+    }
+    /* Two native range inputs stacked — keyboard and screen readers get real
+       controls, and only the thumbs take pointer events. */
+    .range-track input[type=range] {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 26px;
+      margin: 0;
+      background: none;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .range-track input[type=range]:focus { outline: none; }
+    .range-track input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: auto;
+      width: 15px; height: 15px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 2px solid var(--gold);
+      cursor: grab;
+      margin-top: 0;
+    }
+    .range-track input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; background: var(--gold-lt); }
+    .range-track input[type=range]::-moz-range-thumb {
+      pointer-events: auto;
+      width: 15px; height: 15px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 2px solid var(--gold);
+      cursor: grab;
+    }
+    .range-track input[type=range]::-webkit-slider-runnable-track { height: 26px; background: none; }
+    .range-track input[type=range]::-moz-range-track { height: 26px; background: none; }
+    .range-track input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(201,168,76,0.35); }
 
     .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; align-items: baseline; }
     .chips-label { font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: #666; margin-right: 0.3rem; }
@@ -265,8 +368,257 @@
     footer .credit-line { margin-top: 0.85rem; font-size: 0.74rem; letter-spacing: 0.06em; }
     footer .tmdb { margin-top: 0.85rem; font-size: 0.68rem; color: #444; letter-spacing: 0.04em; }
 
+    /* ── Audio Player ─────────────────────────────────── */
+    #matm-player {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(12, 12, 12, 0.98);
+      border-top: 1px solid var(--gold);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    #matm-player.active { transform: translateY(0); }
+
+    .player-caption {
+      padding: 0.5rem 4rem;
+      font-size: 1.05rem;
+      color: var(--cream);
+      font-style: normal;
+      min-height: 2.2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--dark);
+      line-height: 1.5;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 0.75rem 2rem;
+    }
+
+    .player-meta {
+      min-width: 140px;
+    }
+
+    .player-episode {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .player-films {
+      font-size: 0.75rem;
+      color: var(--grey);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .player-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--cream);
+      cursor: pointer;
+      font-size: 0.95rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .player-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    #player-play {
+      border-color: var(--gold);
+      color: var(--gold);
+      width: 2.6rem;
+      height: 2.6rem;
+      font-size: 1.1rem;
+    }
+
+    .player-progress-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .player-progress {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .player-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      width: 0%;
+      pointer-events: none;
+      transition: width 0.25s linear;
+    }
+
+    .player-time {
+      font-size: 0.68rem;
+      color: var(--grey);
+      letter-spacing: 0.06em;
+    }
+
+    .player-close {
+      background: none;
+      border: none;
+      color: var(--grey);
+      cursor: pointer;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.5rem;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .player-close:hover { color: var(--gold); }
+
+    /* ── Feedback Button ──────────────────────────────── */
+    #player-feedback {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    /* ── Feedback Modal ───────────────────────────────── */
+    #feedback-modal {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: min(380px, 90vw);
+      z-index: 300;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.6);
+    }
+    #feedback-modal.open { display: block; }
+    .feedback-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      margin: 0 0 0.2rem;
+    }
+    .feedback-context {
+      font-size: 0.7rem;
+      color: var(--grey);
+      margin: 0 0 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .feedback-field {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.65rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .feedback-field:focus { outline: none; border-color: var(--gold); }
+    .feedback-field::placeholder { color: var(--grey); opacity: 1; }
+    textarea.feedback-field { resize: vertical; min-height: 80px; }
+    .feedback-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.25rem;
+    }
+    .feedback-submit {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .feedback-submit:hover { opacity: 0.85; }
+    .feedback-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .feedback-cancel {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .feedback-cancel:hover { border-color: var(--gold); color: var(--gold); }
+    .feedback-status {
+      font-size: 0.78rem;
+      margin-top: 0.6rem;
+      text-align: center;
+      display: none;
+    }
+
+    #player-prev-chapter,
+    #player-next-chapter {
+      font-size: 0.68rem;
+      width: auto;
+      padding: 0 0.75rem;
+      border-radius: 2rem;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      display: none;
+    }
+
+    .episode-card { cursor: pointer; }
+    .episode-card:hover .episode-play-hint { opacity: 1; }
+
+    .episode-play-hint {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* Room for the player when it is up, so the last row is never hidden. */
+    body.player-open .grid { padding-bottom: 12rem; }
+
     @media (max-width: 900px) {
       .sprocket { display: none; }
+      .nav-links { display: none; }
+      .people-search { flex: 1 1 100%; }
+      .range { flex: 1 1 100%; }
+      .player-caption { padding: 0.5rem 1rem; }
+      .player-controls { gap: 0.7rem; padding: 0.6rem 1rem; }
+      .player-meta { display: none; }
       .wrap { padding: 0 1.2rem; }
       .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.1rem; }
     }
@@ -276,6 +628,17 @@
 
   <div class="sprocket sprocket-left"></div>
   <div class="sprocket sprocket-right"></div>
+
+  <nav>
+    <a class="nav-brand" href="/" title="Back to Madeleine at the Movies">
+      <span class="back" aria-hidden="true">&larr;</span> MatM
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#episodes">Episodes</a></li>
+      <li><a href="/films" class="here">Films</a></li>
+    </ul>
+  </nav>
 
   <header class="page-head">
     <div class="wrap">
@@ -302,6 +665,21 @@
           <option value="title">Title A–Z</option>
           <option value="year">Release year</option>
         </select>
+        <div class="range">
+          <div class="range-head">
+            <span>Episode date</span>
+            <span class="val" id="range-label">—</span>
+            <button type="button" class="reset" id="range-reset">Reset</button>
+          </div>
+          <div class="range-track" id="range-track">
+            <div class="range-rail"></div>
+            <div class="range-fill" id="range-fill"></div>
+            <input type="range" id="range-from" min="0" max="100" value="0" step="1"
+                   aria-label="Earliest episode date" />
+            <input type="range" id="range-to" min="0" max="100" value="100" step="1"
+                   aria-label="Latest episode date" />
+          </div>
+        </div>
       </div>
       <div class="chips" id="frequent-chips"></div>
       <div class="active-filters" id="active-filters"></div>
@@ -316,6 +694,57 @@
       <button type="button" id="clear-all">Clear filters</button>
     </div>
   </main>
+
+  <!-- Feedback Modal -->
+  <div id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+    <p class="feedback-title" id="feedback-title">Leave Feedback</p>
+    <p class="feedback-context" id="feedback-context"></p>
+    <form id="feedback-form" novalidate>
+      <!-- Web3Forms: replace access_key value with key from web3forms.com (registered to blair@prahran.press) -->
+      <input type="hidden" name="access_key"  value="8c3825db-dbdc-43c2-968e-9c34c3206bd2">
+      <input type="hidden" name="from_name"   value="MATM Listener Feedback">
+      <input type="hidden" name="subject"     id="fb-subject">
+      <input type="hidden" name="episode"     id="fb-episode">
+      <input type="hidden" name="film_review" id="fb-chapter">
+      <input type="hidden" name="time_marker" id="fb-time">
+      <!-- Honeypot — leave empty; bots fill it and submissions are rejected -->
+      <input type="checkbox" name="botcheck" style="display:none">
+      <input  class="feedback-field" type="text"  name="first_name" placeholder="First name"    required>
+      <input  class="feedback-field" type="email" name="email"      placeholder="Email address" required>
+      <textarea class="feedback-field"            name="feedback"   placeholder="Your feedback…" required></textarea>
+      <div class="feedback-actions">
+        <button type="button" class="feedback-cancel" id="feedback-cancel">Cancel</button>
+        <button type="submit" class="feedback-submit" id="feedback-submit">Send</button>
+      </div>
+      <p class="feedback-status" id="feedback-status"></p>
+    </form>
+  </div>
+
+  <!-- Audio Player -->
+  <div id="matm-player">
+    <div class="player-caption" id="player-caption"></div>
+    <div class="player-controls">
+      <div class="player-meta">
+        <p class="player-episode" id="player-episode"></p>
+        <p class="player-films" id="player-films"></p>
+      </div>
+      <button class="player-btn" id="player-feedback" title="Leave feedback">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+      <button class="player-btn" id="player-back" title="Back 10 seconds">&#8634;</button>
+      <button class="player-btn" id="player-play" title="Play / Pause">&#9654;</button>
+      <div class="player-progress-wrap">
+        <div class="player-progress" id="player-progress">
+          <div class="player-progress-fill" id="player-progress-fill"></div>
+        </div>
+        <span class="player-time" id="player-time">0:00 / 0:00</span>
+      </div>
+      <audio id="player-audio"></audio>
+      <button class="player-close" id="player-close">&#10005; Close</button>
+    </div>
+  </div>
 
   <footer>
     <p><a href="/copyright">© 2026</a> Madeleine at the Movies &nbsp;·&nbsp; <a href="/">matm.com.au</a> &nbsp;·&nbsp; Golden Days Radio &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a></p>
@@ -332,7 +761,8 @@
   var FREQUENT_MIN = 5;        // people needing this many films to earn a chip
 
   var films = [], people = {}, genres = {}, epDates = {}, counts = {};
-  var state = { person: null, genre: '', sort: 'recent' };
+  var state = { person: null, genre: '', sort: 'recent', from: null, to: null };
+  var epOrder = [];   // every indexed episode, oldest first — the slider's scale
   var nameIndex = [];
 
   // ---------------------------------------------------------------- metaphone
@@ -499,6 +929,110 @@
     return out;
   }
 
+  // ---------------------------------------------------------------- date range
+  // The slider steps over episodes that actually exist rather than over raw
+  // days. 351 episodes across seven uneven years means a linear date scale
+  // wastes most of its travel on the gaps; this way every notch moves the
+  // result set.
+  var MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+
+  function buildEpScale() {
+    var seen = {};
+    films.forEach(function (f) { seen[f.e] = true; });
+    // Ordered by date, not episode number: at least one episode carries a date
+    // out of sequence with its number, and a slider whose labels run backwards
+    // looks broken even when the filtering is right.
+    epOrder = Object.keys(seen).map(Number).sort(function (a, b) {
+      var da = parseEpDate(epDates[String(a)] || '');
+      var db = parseEpDate(epDates[String(b)] || '');
+      if (da && db && da.getTime() !== db.getTime()) return da - db;
+      return a - b;
+    });
+  }
+
+  function epLabel(ep) {
+    var raw = epDates[String(ep)] || '';
+    var parts = raw.split(' ');
+    if (parts.length === 3) {
+      var mi = MONTHS.indexOf(parts[1]);
+      if (mi > -1) return parts[1].slice(0, 3) + ' ' + parts[2];
+    }
+    return raw || ('Ep ' + ep);
+  }
+
+  function rangeBounds() {
+    var lo = state.from === null ? 0 : state.from;
+    var hi = state.to === null ? epOrder.length - 1 : state.to;
+    if (lo > hi) { var t = lo; lo = hi; hi = t; }
+    return [lo, hi];
+  }
+
+  function rangeIsFull() {
+    var b = rangeBounds();
+    return b[0] === 0 && b[1] === epOrder.length - 1;
+  }
+
+  function paintRange() {
+    if (!epOrder.length) return;
+    var b = rangeBounds(), last = epOrder.length - 1;
+    var fill = document.getElementById('range-fill');
+    var leftPct  = (b[0] / last) * 100;
+    var rightPct = (b[1] / last) * 100;
+    fill.style.left  = leftPct + '%';
+    fill.style.width = (rightPct - leftPct) + '%';
+    document.getElementById('range-label').textContent =
+      epLabel(epOrder[b[0]]) + ' – ' + epLabel(epOrder[b[1]]);
+    document.getElementById('range-reset').style.visibility =
+      rangeIsFull() ? 'hidden' : 'visible';
+  }
+
+  function initRange() {
+    var last = Math.max(epOrder.length - 1, 0);
+    var from = document.getElementById('range-from');
+    var to   = document.getElementById('range-to');
+    [from, to].forEach(function (el) { el.min = 0; el.max = last; });
+
+    if (state.from === null) state.from = 0;
+    if (state.to === null) state.to = last;
+    state.from = Math.min(Math.max(state.from, 0), last);
+    state.to   = Math.min(Math.max(state.to, 0), last);
+
+    from.value = state.from;
+    to.value   = state.to;
+
+    function onInput() {
+      var a = Number(from.value), b = Number(to.value);
+      // Handles may cross; the lower value always wins the lower bound, so
+      // dragging one past the other swaps rather than sticking.
+      state.from = Math.min(a, b);
+      state.to   = Math.max(a, b);
+      paintRange();
+      render();
+    }
+    from.addEventListener('input', onInput);
+    to.addEventListener('input', onInput);
+
+    document.getElementById('range-reset').addEventListener('click', function () {
+      state.from = 0;
+      state.to = last;
+      from.value = 0;
+      to.value = last;
+      paintRange();
+      render();
+    });
+
+    paintRange();
+  }
+
+  function inRange(f) {
+    if (!epOrder.length) return true;
+    var b = rangeBounds();
+    var idx = epOrder.indexOf(f.e);
+    if (idx === -1) return true;
+    return idx >= b[0] && idx <= b[1];
+  }
+
   // ---------------------------------------------------------------- embargo
   function parseEpDate(str) {
     var d = new Date(str + ' 00:00:00');
@@ -509,6 +1043,224 @@
     if (!d) return false;
     var age = (Date.now() - d.getTime()) / 86400000;
     return age < EMBARGO_DAYS;
+  }
+
+  // ---------------------------------------------------------------- player
+  // A compact version of the player on the home page, so that listening and
+  // leaving feedback never navigate away from a filtered view. Same audio,
+  // same chapter VTTs, same feedback form and Web3Forms key.
+  var R2 = 'https://pub-fca72aca0d2a44489ca717888abac149.r2.dev';
+  var audioEl, playBtn, progressFill, timeEl, captionEl, playerEl;
+  var chapters = [], cues = [], current = null, currentChapter = null;
+
+  function pad4(n) { return String(n).padStart(4, '0'); }
+
+  function fmt(sec) {
+    if (!isFinite(sec)) return '0:00';
+    var m = Math.floor(sec / 60), s2 = Math.floor(sec % 60);
+    return m + ':' + (s2 < 10 ? '0' : '') + s2;
+  }
+
+  function parseVTT(text) {
+    var out = [];
+    text.split(/\r?\n\r?\n/).forEach(function (block) {
+      var lines = block.split(/\r?\n/).filter(Boolean);
+      var timeLine = lines.find(function (l) { return l.indexOf('-->') > -1; });
+      if (!timeLine) return;
+      var body = lines.slice(lines.indexOf(timeLine) + 1).join(' ').trim();
+      if (!body) return;
+      var parts = timeLine.split('-->');
+      out.push({ start: toSeconds(parts[0]), end: toSeconds(parts[1]), text: body });
+    });
+    return out;
+  }
+
+  function toSeconds(stamp) {
+    var bits = stamp.trim().split(':').map(parseFloat);
+    if (bits.length === 3) return bits[0] * 3600 + bits[1] * 60 + bits[2];
+    if (bits.length === 2) return bits[0] * 60 + bits[1];
+    return bits[0] || 0;
+  }
+
+  async function playFilm(f, openFeedback) {
+    var base = R2 + '/MatM_' + pad4(f.e);
+    var sameEpisode = current && current.e === f.e;
+    current = f;
+    currentChapter = chapterParam(f);
+
+    document.getElementById('player-episode').textContent = 'Ep ' + f.e;
+    document.getElementById('player-films').textContent = title(f);
+    playerEl.classList.add('active');
+    document.body.classList.add('player-open');
+
+    if (!sameEpisode) {
+      chapters = []; cues = [];
+      captionEl.textContent = '';
+      audioEl.innerHTML = '';
+      [['audio/webm; codecs=opus', '.webm'], ['audio/mp4', '.m4a']].forEach(function (pair) {
+        var src = document.createElement('source');
+        src.src = base + pair[1];
+        src.type = pair[0];
+        audioEl.appendChild(src);
+      });
+      audioEl.load();
+
+      try {
+        var rc = await fetch(base + '.vtt');
+        if (rc.ok) cues = parseVTT(await rc.text());
+      } catch (e) { /* captions are optional */ }
+      try {
+        var rr = await fetch(base + '.chapters.vtt');
+        if (rr.ok) chapters = parseVTT(await rr.text());
+      } catch (e) { /* so are chapters */ }
+    }
+
+    seekToChapter(currentChapter, function () {
+      if (openFeedback) openFeedbackModal();
+      else audioEl.play().catch(function () {});
+    });
+
+    if (window.gtag) {
+      gtag('event', 'film_index_play', { episode_number: f.e, film_title: title(f) });
+    }
+  }
+
+  function seekToChapter(name, done) {
+    var target = chapters.find(function (c) {
+      return c.text.toLowerCase().trim() === String(name).toLowerCase().trim();
+    });
+    var to = target ? target.start : 0;
+
+    function trySeek(triesLeft) {
+      if (!to) return;
+      audioEl.currentTime = to;
+      if (Math.abs(audioEl.currentTime - to) < 1) return;   // landed
+      // Seeks are clamped to 0 while the target sits outside the seekable
+      // range — a slow connection, or a host not honouring range requests.
+      // Keep trying quietly as more audio arrives.
+      if (triesLeft > 0) setTimeout(function () { trySeek(triesLeft - 1); }, 400);
+    }
+
+    function go() {
+      trySeek(12);
+      // The listener's action never waits on the seek: play, or open the
+      // feedback form, straight away.
+      if (done) done();
+    }
+
+    if (audioEl.readyState >= 1) go();
+    else audioEl.addEventListener('loadedmetadata', go, { once: true });
+  }
+
+  function activeChapterTitle() {
+    if (!chapters.length) return currentChapter || (current ? title(current) : '—');
+    var cur = audioEl.currentTime;
+    var found = chapters.slice().reverse().find(function (c) { return cur >= c.start; });
+    return found ? found.text : (currentChapter || '—');
+  }
+
+  function openFeedbackModal() {
+    if (!current) return;
+    var ep = 'Ep ' + current.e;
+    var ch = activeChapterTitle();
+    var t  = fmt(audioEl.currentTime);
+    document.getElementById('fb-episode').value = ep;
+    document.getElementById('fb-chapter').value = ch;
+    document.getElementById('fb-time').value    = t;
+    document.getElementById('fb-subject').value = 'MatM Feedback: ' + ch;
+    document.getElementById('feedback-context').textContent = ep + '  ·  ' + ch + '  ·  ' + t;
+    document.getElementById('feedback-modal').classList.add('open');
+    document.getElementById('feedback-form').querySelector('[name="first_name"]').focus();
+  }
+
+  function closeFeedbackModal() {
+    var modal = document.getElementById('feedback-modal');
+    modal.classList.remove('open');
+    document.getElementById('feedback-form').reset();
+    var st = document.getElementById('feedback-status');
+    st.style.display = 'none';
+    st.textContent = '';
+    var submit = document.getElementById('feedback-submit');
+    submit.disabled = false;
+    submit.textContent = 'Send';
+  }
+
+  function wirePlayer() {
+    audioEl      = document.getElementById('player-audio');
+    playBtn      = document.getElementById('player-play');
+    progressFill = document.getElementById('player-progress-fill');
+    timeEl       = document.getElementById('player-time');
+    captionEl    = document.getElementById('player-caption');
+    playerEl     = document.getElementById('matm-player');
+
+    playBtn.addEventListener('click', function () {
+      if (audioEl.paused) audioEl.play().catch(function () {});
+      else audioEl.pause();
+    });
+    audioEl.addEventListener('play',  function () { playBtn.textContent = '\u23F8'; });
+    audioEl.addEventListener('pause', function () { playBtn.textContent = '\u25B6'; });
+
+    document.getElementById('player-back').addEventListener('click', function () {
+      audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
+    });
+
+    document.getElementById('player-close').addEventListener('click', function () {
+      audioEl.pause();
+      playerEl.classList.remove('active');
+      document.body.classList.remove('player-open');
+    });
+
+    document.getElementById('player-progress').addEventListener('click', function (e) {
+      var r = this.getBoundingClientRect();
+      if (isFinite(audioEl.duration)) {
+        audioEl.currentTime = ((e.clientX - r.left) / r.width) * audioEl.duration;
+      }
+    });
+
+    audioEl.addEventListener('timeupdate', function () {
+      var cur = audioEl.currentTime, dur = audioEl.duration || 0;
+      progressFill.style.width = dur ? (cur / dur * 100) + '%' : '0%';
+      timeEl.textContent = fmt(cur) + ' / ' + fmt(dur);
+      if (cues.length) {
+        var line = cues.slice().reverse().find(function (c) { return cur >= c.start && cur <= c.end; });
+        captionEl.textContent = line ? line.text : '';
+      }
+    });
+
+    document.getElementById('player-feedback').addEventListener('click', openFeedbackModal);
+    document.getElementById('feedback-cancel').addEventListener('click', closeFeedbackModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeFeedbackModal();
+    });
+
+    document.getElementById('feedback-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var submit = document.getElementById('feedback-submit');
+      var status = document.getElementById('feedback-status');
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+      try {
+        var payload = {};
+        new FormData(e.target).forEach(function (v, k) { payload[k] = v; });
+        var res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          status.textContent = 'Thank you — your feedback has been sent.';
+          status.style.color = 'var(--gold)';
+          status.style.display = 'block';
+          setTimeout(closeFeedbackModal, 2200);
+        } else { throw new Error('bad response'); }
+      } catch (err) {
+        status.textContent = 'Something went wrong. Please try again.';
+        status.style.color = '#ff6666';
+        status.style.display = 'block';
+        submit.disabled = false;
+        submit.textContent = 'Send';
+      }
+    });
   }
 
   // ---------------------------------------------------------------- render
@@ -598,17 +1350,31 @@
 
     var links = document.createElement('div');
     links.className = 'card-links';
+
+    // Real hrefs, so middle-click and "open in new tab" still work and the
+    // links mean something without JavaScript. The click handler keeps an
+    // ordinary click on this page instead, so the filters survive.
     var listen = document.createElement('a');
     listen.className = 'listen';
     listen.href = listenHref(f);
     listen.textContent = 'Listen';
-    listen.title = 'Open the episode at this review';
+    listen.title = 'Play this review without leaving the page';
+    listen.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      playFilm(f, false);
+    });
     links.appendChild(listen);
 
     var fb = document.createElement('a');
     fb.href = feedbackHref(f);
     fb.textContent = 'Feedback';
-    fb.title = 'Open the episode here and leave feedback';
+    fb.title = 'Leave feedback on this review';
+    fb.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      playFilm(f, true);
+    });
     links.appendChild(fb);
     body.appendChild(links);
 
@@ -619,6 +1385,7 @@
   function visibleFilms() {
     return films.filter(function (f) {
       if (isEmbargoed(f)) return false;
+      if (!inRange(f)) return false;
       if (state.genre && (f.g || []).indexOf(Number(state.genre)) === -1) return false;
       if (state.person) {
         var id = Number(state.person);
@@ -648,7 +1415,7 @@
 
     var total = films.filter(function (f) { return !isEmbargoed(f); }).length;
     var line = document.getElementById('count-line');
-    if (list.length === total) {
+    if (list.length === total && rangeIsFull()) {
       line.textContent = total + ' of ' + counts.total + ' reviewed titles indexed — '
         + counts.held + ' still being checked, and festivals, roundups and television are not included.';
     } else {
@@ -772,6 +1539,11 @@
     if (state.genre) q.push('genre=' + encodeURIComponent(state.genre));
     if (state.person) q.push('person=' + encodeURIComponent(state.person));
     if (state.sort !== 'recent') q.push('sort=' + encodeURIComponent(state.sort));
+    if (epOrder.length && !rangeIsFull()) {
+      var b = rangeBounds();
+      q.push('from=' + epOrder[b[0]]);
+      q.push('to=' + epOrder[b[1]]);
+    }
     var url = location.pathname + (q.length ? '?' + q.join('&') : '');
     history.replaceState(null, '', url);
   }
@@ -781,6 +1553,16 @@
     if (p.get('genre')) state.genre = p.get('genre');
     if (p.get('person')) state.person = p.get('person');
     if (p.get('sort')) state.sort = p.get('sort');
+    // from/to arrive as episode numbers, which survive a re-enrichment; the
+    // slider positions behind them do not.
+    if (p.get('from')) {
+      var i = epOrder.indexOf(Number(p.get('from')));
+      if (i > -1) state.from = i;
+    }
+    if (p.get('to')) {
+      var j = epOrder.indexOf(Number(p.get('to')));
+      if (j > -1) state.to = j;
+    }
   }
 
   // ---------------------------------------------------------------- boot
@@ -821,6 +1603,7 @@
       state.sort = 'recent';
       document.getElementById('genre-select').value = '';
       document.getElementById('sort-select').value = 'recent';
+      document.getElementById('range-reset').click();
       setPerson(null);
     });
   }
@@ -835,7 +1618,9 @@
     buildNameIndex();
     buildGenreSelect();
     buildFrequentChips();
+    buildEpScale();
     readUrl();
+    initRange();
 
     document.getElementById('genre-select').value = state.genre || '';
     document.getElementById('sort-select').value = state.sort;
@@ -843,6 +1628,7 @@
       document.getElementById('person-input').value = people[state.person];
     }
     wire();
+    wirePlayer();
     render();
   }
 
