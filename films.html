@@ -1413,11 +1413,19 @@
 
     document.getElementById('empty').style.display = list.length ? 'none' : 'block';
 
-    var total = films.filter(function (f) { return !isEmbargoed(f); }).length;
+    var embargoed = films.filter(isEmbargoed).length;
+    var total = films.length - embargoed;
     var line = document.getElementById('count-line');
     if (list.length === total && rangeIsFull()) {
+      // The numbers have to add up to counts.total, so the embargoed films
+      // get named rather than quietly going missing from the arithmetic.
+      var parts = [counts.held + ' still being checked'];
+      if (embargoed) {
+        parts.push(embargoed === 1 ? '1 held until broadcast'
+                                   : embargoed + ' held until broadcast');
+      }
       line.textContent = total + ' of ' + counts.total + ' reviewed titles indexed — '
-        + counts.held + ' still being checked, and festivals, roundups and television are not included.';
+        + parts.join(', ') + ', and festivals, roundups and television are not included.';
     } else {
       line.textContent = 'Showing ' + list.length + ' of ' + total + ' films.';
     }
