@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Held back from search until Blair approves the page. Remove both of these
+       (and the nav link can go into index.html) on the day it goes public. -->
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Film Index — Madeleine at the Movies</title>
+  <meta name="description" content="Every film reviewed by Madeleine Swain on Golden Days Radio, browsable by genre, director and cast." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230c0c0c'/><rect x='2' y='4' width='4' height='5' rx='1' fill='white'/><rect x='2' y='13' width='4' height='5' rx='1' fill='white'/><rect x='2' y='22' width='4' height='5' rx='1' fill='white'/><rect x='26' y='4' width='4' height='5' rx='1' fill='white'/><rect x='26' y='13' width='4' height='5' rx='1' fill='white'/><rect x='26' y='22' width='4' height='5' rx='1' fill='white'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:   #0c0c0c;
+      --dark:    #141414;
+      --mid:     #1e1e1e;
+      --border:  #2e2e2e;
+      --gold:    #c9a84c;
+      --gold-lt: #e2c97e;
+      --cream:   #f0ead8;
+      --grey:    #aaaaaa;
+      --white:   #f5f5f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background-color: var(--black);
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── Film sprockets ───────────────────────────────── */
+    .sprocket {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 56px;
+      z-index: 50;
+      pointer-events: none;
+      background-color: #111;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='52'%3E%3Crect width='56' height='52' fill='%23111111'/%3E%3Crect x='8' y='10' width='40' height='32' rx='6' ry='6' fill='%23cfc8b4'/%3E%3C/svg%3E");
+      background-repeat: repeat-y;
+      background-position: center top;
+    }
+    .sprocket-left  { left: 0; }
+    .sprocket-right { right: 0; }
+
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ── Header ───────────────────────────────────────── */
+    header.page-head {
+      padding: 3.5rem 0 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 0.6rem;
+    }
+    .eyebrow a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; }
+    .eyebrow a:hover { border-bottom-color: var(--gold); }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--cream);
+      margin: 0 0 0.6rem;
+    }
+    .lede { color: var(--grey); font-size: 0.95rem; margin: 0; }
+
+    /* ── Filter bar ───────────────────────────────────── */
+    .filters {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(12,12,12,0.96);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .field {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 300;
+      padding: 0.55rem 0.8rem;
+      border-radius: 3px;
+    }
+    .field:focus { outline: none; border-color: var(--gold); }
+    .field::placeholder { color: #666; }
+    select.field { cursor: pointer; }
+
+    .people-search { position: relative; flex: 1 1 260px; min-width: 200px; }
+    .people-search input { width: 100%; }
+    .suggestions {
+      display: none;
+      position: absolute;
+      left: 0; right: 0; top: calc(100% + 4px);
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 40;
+    }
+    .suggestions.open { display: block; }
+    .suggestion {
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(46,46,46,0.6);
+    }
+    .suggestion:last-child { border-bottom: none; }
+    .suggestion:hover, .suggestion.active { background: var(--mid); color: var(--gold-lt); }
+    .suggestion .role { color: #666; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+    .suggestion .why { color: #6a6a6a; font-size: 0.7rem; font-style: italic; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; align-items: baseline; }
+    .chips-label { font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: #666; margin-right: 0.3rem; }
+    .chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 300;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--gold-lt); }
+    .chip .n { color: #5e5e5e; font-size: 0.7rem; margin-left: 0.3rem; }
+
+    .active-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+    .active-filter {
+      background: rgba(201,168,76,0.12);
+      border: 1px solid var(--gold);
+      color: var(--gold-lt);
+      font-size: 0.78rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .active-filter::after { content: ' ×'; opacity: 0.7; }
+
+    /* ── Results ──────────────────────────────────────── */
+    .count-line {
+      color: #777;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      margin: 1.6rem 0 1.2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+      gap: 1.6rem;
+      padding-bottom: 3rem;
+    }
+    .card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.18s ease;
+    }
+    .card:hover { border-color: #3d3d3d; }
+    .poster {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      display: block;
+      background: var(--mid);
+      border-bottom: 1px solid var(--border);
+    }
+    .poster-missing {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: var(--mid);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3d3d3d;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-style: italic;
+    }
+    .card-body { padding: 0.8rem 0.9rem 0.9rem; flex: 1; display: flex; flex-direction: column; }
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.3;
+      margin: 0 0 0.25rem;
+      color: var(--cream);
+    }
+    .card .meta { font-size: 0.76rem; color: #7c7c7c; margin: 0 0 0.5rem; }
+    .card .credit { font-size: 0.78rem; color: var(--grey); margin: 0 0 0.15rem; }
+    .card .credit b { font-weight: 400; color: #8e8e8e; }
+    .card .credit button {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font: inherit; color: var(--grey); text-align: left;
+    }
+    .card .credit button:hover { color: var(--gold-lt); }
+    .card .genres { font-size: 0.72rem; color: #6a6a6a; margin: 0.45rem 0 0; letter-spacing: 0.04em; }
+    .card-links {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.74rem;
+      letter-spacing: 0.06em;
+    }
+    .card-links a {
+      color: #808080;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.25rem 0.55rem;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .card-links a:hover { border-color: var(--gold); color: var(--gold-lt); }
+    .card-links a.listen { border-color: rgba(201,168,76,0.4); color: var(--gold); }
+
+    .empty { color: var(--grey); padding: 3rem 0; text-align: center; font-style: italic; }
+    .empty button { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 0.4rem 1rem; border-radius: 3px; cursor: pointer; font-family: inherit; margin-left: 0.6rem; }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: #555;
+    }
+    footer a { color: #555; }
+    footer a:hover { color: var(--gold); }
+    footer .credit-line { margin-top: 0.85rem; font-size: 0.74rem; letter-spacing: 0.06em; }
+    footer .tmdb { margin-top: 0.85rem; font-size: 0.68rem; color: #444; letter-spacing: 0.04em; }
+
+    @media (max-width: 900px) {
+      .sprocket { display: none; }
+      .wrap { padding: 0 1.2rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sprocket sprocket-left"></div>
+  <div class="sprocket sprocket-right"></div>
+
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow"><a href="/">Madeleine at the Movies</a></p>
+      <h1>The Film Index</h1>
+      <p class="lede">Every film reviewed on Golden Days Radio, by genre, director and cast.</p>
+    </div>
+  </header>
+
+  <div class="filters">
+    <div class="wrap">
+      <div class="filter-row">
+        <div class="people-search">
+          <input id="person-input" class="field" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="Search a director or actor…" aria-label="Search directors and actors" />
+          <div class="suggestions" id="suggestions" role="listbox"></div>
+        </div>
+        <select id="genre-select" class="field" aria-label="Filter by genre">
+          <option value="">All genres</option>
+        </select>
+        <select id="sort-select" class="field" aria-label="Sort order">
+          <option value="recent">Most recent episode</option>
+          <option value="oldest">Earliest episode</option>
+          <option value="title">Title A–Z</option>
+          <option value="year">Release year</option>
+        </select>
+      </div>
+      <div class="chips" id="frequent-chips"></div>
+      <div class="active-filters" id="active-filters"></div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <p class="count-line" id="count-line">Loading…</p>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">
+      Nothing matches that combination.
+      <button type="button" id="clear-all">Clear filters</button>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="/copyright">© 2026</a> Madeleine at the Movies &nbsp;·&nbsp; <a href="/">matm.com.au</a> &nbsp;·&nbsp; Golden Days Radio &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a></p>
+    <p class="credit-line">Madeleine at the Movies is produced and edited by <a href="https://blairpurvis.com" target="_blank" rel="noopener">Blair Purvis</a>.</p>
+    <p class="tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var IMG = 'https://image.tmdb.org/t/p/w342';
+  var EMBARGO_DAYS = 7;        // mirrors the embargo on index.html
+  var FREQUENT_MIN = 5;        // people needing this many films to earn a chip
+
+  var films = [], people = {}, genres = {}, epDates = {}, counts = {};
+  var state = { person: null, genre: '', sort: 'recent' };
+  var nameIndex = [];
+
+  // ---------------------------------------------------------------- metaphone
+  // Double Metaphone, trimmed to the primary code. Names are misspelt by sound
+  // far more often than by keystroke — Stephen/Steven, Catherine/Katherine,
+  // MacDonald/McDonald all collapse to one code here.
+  function metaphone(word) {
+    var s = (word || '').toUpperCase().replace(/[^A-Z]/g, '');
+    if (!s) return '';
+    var out = '', i = 0, n = s.length;
+    var pre = s.slice(0, 2);
+    if (pre === 'AE' || pre === 'GN' || pre === 'KN' || pre === 'PN' || pre === 'WR') i = 1;
+    if (s[0] === 'X') { out = 'S'; i = 1; }
+    for (; i < n && out.length < 6; i++) {
+      var c = s[i], next = s[i + 1] || '';
+      if (c === s[i - 1] && c !== 'C') continue;             // drop doubles
+      switch (c) {
+        case 'A': case 'E': case 'I': case 'O': case 'U':
+          if (i === 0) out += 'A';
+          break;
+        case 'B': if (!(i === n - 1 && s[i - 1] === 'M')) out += 'B'; break;
+        case 'C':
+          if (next === 'I' && s[i + 2] === 'A') { out += 'X'; }
+          else if (next === 'H') { out += 'X'; i++; }
+          else if (/[IEY]/.test(next)) { out += 'S'; }
+          else { out += 'K'; }
+          break;
+        case 'D':
+          if (next === 'G' && /[IEY]/.test(s[i + 2] || '')) { out += 'J'; i += 2; }
+          else out += 'T';
+          break;
+        case 'G':
+          if (next === 'H') { if (!/[BDH]/.test(s[i - 2] || '')) out += 'K'; i++; }
+          else if (next === 'N') { /* silent: gnome, Gnu */ }
+          else if (/[IEY]/.test(next)) out += 'J';
+          else out += 'K';
+          break;
+        case 'H':
+          if (/[AEIOU]/.test(s[i - 1] || '') && !/[AEIOU]/.test(next)) break;
+          if (/[CSPTG]/.test(s[i - 1] || '')) break;
+          out += 'H';
+          break;
+        case 'K': if (s[i - 1] !== 'C') out += 'K'; break;
+        case 'P': if (next === 'H') { out += 'F'; i++; } else out += 'P'; break;
+        case 'Q': out += 'K'; break;
+        case 'S':
+          if (next === 'H') { out += 'X'; i++; }
+          else if (next === 'I' && /[OA]/.test(s[i + 2] || '')) out += 'X';
+          else out += 'S';
+          break;
+        case 'T':
+          if (next === 'H') { out += '0'; i++; }
+          else if (next === 'I' && /[OA]/.test(s[i + 2] || '')) out += 'X';
+          else out += 'T';
+          break;
+        case 'V': out += 'F'; break;
+        case 'W': case 'Y': if (/[AEIOU]/.test(next)) out += c; break;
+        case 'X': out += 'KS'; break;
+        case 'Z': out += 'S'; break;
+        case 'F': case 'J': case 'L': case 'M': case 'N': case 'R':
+          out += c; break;
+        default: break;
+      }
+    }
+    return out;
+  }
+
+  function fold(s) {
+    return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  // Cheap bounded edit distance — only consulted when the first two tiers miss.
+  function within2(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return false;
+    var prev = [], cur = [], i, j;
+    for (j = 0; j <= b.length; j++) prev[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      cur[0] = i;
+      var best = i;
+      for (j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1,
+                          prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (cur[j] < best) best = cur[j];
+      }
+      if (best > 2) return false;
+      prev = cur.slice();
+    }
+    return prev[b.length] <= 2;
+  }
+
+  function buildNameIndex() {
+    var directorCount = {}, castCount = {};
+    films.forEach(function (f) {
+      if (f.d) directorCount[f.d] = (directorCount[f.d] || 0) + 1;
+      (f.c || []).forEach(function (id) { castCount[id] = (castCount[id] || 0) + 1; });
+    });
+    var seen = {};
+    Object.keys(people).forEach(function (id) {
+      var name = people[id];
+      var dn = directorCount[id] || 0, cn = castCount[id] || 0;
+      if (!dn && !cn) return;
+      var folded = fold(name);
+      var tokens = folded.split(' ').filter(Boolean);
+      seen[id] = {
+        id: id,
+        name: name,
+        folded: folded,
+        tokens: tokens,
+        codes: tokens.map(metaphone),
+        films: dn + cn,
+        role: dn && cn ? 'Director · Cast' : (dn ? 'Director' : 'Cast')
+      };
+    });
+    nameIndex = Object.keys(seen).map(function (k) { return seen[k]; })
+      .sort(function (a, b) { return b.films - a.films || a.name.localeCompare(b.name); });
+  }
+
+  function searchNames(query, limit) {
+    var q = fold(query);
+    if (q.length < 2) return [];
+    var qTokens = q.split(' ').filter(Boolean);
+    var qCodes = qTokens.map(metaphone);
+    var exact = [], phonetic = [], fuzzy = [];
+
+    nameIndex.forEach(function (p) {
+      // Tier 1 — every query token prefixes some name token.
+      var allPrefix = qTokens.every(function (t) {
+        return p.tokens.some(function (nt) { return nt.indexOf(t) === 0; });
+      });
+      if (allPrefix) { exact.push(p); return; }
+
+      // Tier 2 — sounds the same.
+      var allSound = qCodes.every(function (code, idx) {
+        if (!code) return true;
+        return p.codes.some(function (nc) { return nc && nc === code; }) ||
+               p.tokens.some(function (nt) { return nt.indexOf(qTokens[idx]) === 0; });
+      });
+      if (allSound) { phonetic.push(p); return; }
+
+      // Tier 3 — a genuine typo in any one token.
+      var anyClose = qTokens.some(function (t) {
+        return t.length > 3 && p.tokens.some(function (nt) { return within2(t, nt); });
+      });
+      if (anyClose) fuzzy.push(p);
+    });
+
+    // Lower tiers only fill space the higher ones left. A confident prefix
+    // match should not be buried under eight phonetic near-misses.
+    limit = limit || 8;
+    var out = exact.slice(0, limit).map(function (p) { return { p: p, why: '' }; });
+    if (out.length < 4) {
+      phonetic.slice(0, limit - out.length).forEach(function (p) {
+        out.push({ p: p, why: 'sounds like' });
+      });
+    }
+    // Typo-distance is the last resort: it only runs when nothing spelt or
+    // sounded right, otherwise it pads a good answer with strangers.
+    if (!out.length) {
+      fuzzy.slice(0, 3).forEach(function (p) {
+        out.push({ p: p, why: 'close match' });
+      });
+    }
+    return out;
+  }
+
+  // ---------------------------------------------------------------- embargo
+  function parseEpDate(str) {
+    var d = new Date(str + ' 00:00:00');
+    return isNaN(d) ? null : d;
+  }
+  function isEmbargoed(f) {
+    var d = parseEpDate(epDates[String(f.e)] || '');
+    if (!d) return false;
+    var age = (Date.now() - d.getTime()) / 86400000;
+    return age < EMBARGO_DAYS;
+  }
+
+  // ---------------------------------------------------------------- render
+  function title(f) { return f.n || f.t; }
+
+  function chapterParam(f) { return f.ch || f.t; }
+
+  function listenHref(f) {
+    return '/?ep=' + f.e + '&chapter=' + encodeURIComponent(chapterParam(f));
+  }
+  function feedbackHref(f) {
+    return listenHref(f) + '&feedback=1';
+  }
+
+  function personButton(id, label) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    b.addEventListener('click', function () { setPerson(id); });
+    return b;
+  }
+
+  function card(f) {
+    var el = document.createElement('article');
+    el.className = 'card';
+
+    if (f.p) {
+      var img = document.createElement('img');
+      img.className = 'poster';
+      img.loading = 'lazy';
+      img.alt = '';
+      img.src = IMG + f.p;
+      img.addEventListener('error', function () {
+        var ph = document.createElement('div');
+        ph.className = 'poster-missing';
+        ph.textContent = title(f).charAt(0);
+        el.replaceChild(ph, img);
+      });
+      el.appendChild(img);
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'poster-missing';
+      ph.textContent = title(f).charAt(0);
+      el.appendChild(ph);
+    }
+
+    var body = document.createElement('div');
+    body.className = 'card-body';
+
+    var h = document.createElement('h2');
+    h.textContent = title(f);
+    body.appendChild(h);
+
+    var meta = document.createElement('p');
+    meta.className = 'meta';
+    meta.textContent = 'Ep ' + f.e + ' · ' + (epDates[String(f.e)] || f.y);
+    body.appendChild(meta);
+
+    if (f.d && people[f.d]) {
+      var dp = document.createElement('p');
+      dp.className = 'credit';
+      var lbl = document.createElement('b');
+      lbl.textContent = 'dir. ';
+      dp.appendChild(lbl);
+      dp.appendChild(personButton(f.d, people[f.d]));
+      body.appendChild(dp);
+    }
+
+    var castNames = (f.c || []).filter(function (id) { return people[id]; });
+    if (castNames.length) {
+      var cp = document.createElement('p');
+      cp.className = 'credit';
+      castNames.forEach(function (id, idx) {
+        if (idx) cp.appendChild(document.createTextNode(', '));
+        cp.appendChild(personButton(id, people[id]));
+      });
+      body.appendChild(cp);
+    }
+
+    if ((f.g || []).length) {
+      var g = document.createElement('p');
+      g.className = 'genres';
+      g.textContent = f.g.map(function (id) { return genres[String(id)] || ''; })
+        .filter(Boolean).join(' · ');
+      body.appendChild(g);
+    }
+
+    var links = document.createElement('div');
+    links.className = 'card-links';
+    var listen = document.createElement('a');
+    listen.className = 'listen';
+    listen.href = listenHref(f);
+    listen.textContent = 'Listen';
+    listen.title = 'Open the episode at this review';
+    links.appendChild(listen);
+
+    var fb = document.createElement('a');
+    fb.href = feedbackHref(f);
+    fb.textContent = 'Feedback';
+    fb.title = 'Open the episode here and leave feedback';
+    links.appendChild(fb);
+    body.appendChild(links);
+
+    el.appendChild(body);
+    return el;
+  }
+
+  function visibleFilms() {
+    return films.filter(function (f) {
+      if (isEmbargoed(f)) return false;
+      if (state.genre && (f.g || []).indexOf(Number(state.genre)) === -1) return false;
+      if (state.person) {
+        var id = Number(state.person);
+        if (f.d !== id && (f.c || []).indexOf(id) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function sortFilms(list) {
+    var s = state.sort;
+    return list.slice().sort(function (a, b) {
+      if (s === 'recent') return b.e - a.e || title(a).localeCompare(title(b));
+      if (s === 'oldest') return a.e - b.e || title(a).localeCompare(title(b));
+      if (s === 'year')   return (b.y || 0) - (a.y || 0) || title(a).localeCompare(title(b));
+      return title(a).localeCompare(title(b));
+    });
+  }
+
+  function render() {
+    var list = sortFilms(visibleFilms());
+    var grid = document.getElementById('grid');
+    grid.textContent = '';
+    list.forEach(function (f) { grid.appendChild(card(f)); });
+
+    document.getElementById('empty').style.display = list.length ? 'none' : 'block';
+
+    var total = films.filter(function (f) { return !isEmbargoed(f); }).length;
+    var line = document.getElementById('count-line');
+    if (list.length === total) {
+      line.textContent = total + ' of ' + counts.total + ' reviewed titles indexed — '
+        + counts.held + ' still being checked, and festivals, roundups and television are not included.';
+    } else {
+      line.textContent = 'Showing ' + list.length + ' of ' + total + ' films.';
+    }
+
+    renderActiveFilters();
+    writeUrl();
+  }
+
+  function renderActiveFilters() {
+    var box = document.getElementById('active-filters');
+    box.textContent = '';
+    if (state.genre) {
+      box.appendChild(pill(genres[state.genre] || 'Genre', function () {
+        state.genre = '';
+        document.getElementById('genre-select').value = '';
+        render();
+      }));
+    }
+    if (state.person) {
+      box.appendChild(pill(people[state.person] || 'Person', function () { setPerson(null); }));
+    }
+  }
+
+  function pill(label, onClear) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'active-filter';
+    b.textContent = label;
+    b.addEventListener('click', onClear);
+    return b;
+  }
+
+  function setPerson(id) {
+    state.person = id ? String(id) : null;
+    var input = document.getElementById('person-input');
+    input.value = id ? people[id] : '';
+    closeSuggestions();
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------------------------------------------------------------- chrome
+  function buildGenreSelect() {
+    var counts = {};
+    films.forEach(function (f) {
+      (f.g || []).forEach(function (id) { counts[id] = (counts[id] || 0) + 1; });
+    });
+    var sel = document.getElementById('genre-select');
+    Object.keys(counts)
+      .sort(function (a, b) { return counts[b] - counts[a]; })
+      .forEach(function (id) {
+        if (!genres[id]) return;
+        var o = document.createElement('option');
+        o.value = id;
+        o.textContent = genres[id] + ' (' + counts[id] + ')';
+        sel.appendChild(o);
+      });
+  }
+
+  function buildFrequentChips() {
+    var box = document.getElementById('frequent-chips');
+    var top = nameIndex.filter(function (p) { return p.films >= FREQUENT_MIN; }).slice(0, 14);
+    if (!top.length) return;
+    var label = document.createElement('span');
+    label.className = 'chips-label';
+    label.textContent = 'Most reviewed';
+    box.appendChild(label);
+    top.forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.appendChild(document.createTextNode(p.name));
+      var n = document.createElement('span');
+      n.className = 'n';
+      n.textContent = p.films;
+      b.appendChild(n);
+      b.addEventListener('click', function () { setPerson(p.id); });
+      box.appendChild(b);
+    });
+  }
+
+  function closeSuggestions() {
+    document.getElementById('suggestions').classList.remove('open');
+  }
+
+  function showSuggestions(results) {
+    var box = document.getElementById('suggestions');
+    box.textContent = '';
+    if (!results.length) { closeSuggestions(); return; }
+    results.forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'suggestion';
+      row.setAttribute('role', 'option');
+      var left = document.createElement('span');
+      left.textContent = r.p.name;
+      if (r.why) {
+        var why = document.createElement('span');
+        why.className = 'why';
+        why.textContent = '  ' + r.why;
+        left.appendChild(why);
+      }
+      var right = document.createElement('span');
+      right.className = 'role';
+      right.textContent = r.p.role + ' · ' + r.p.films;
+      row.appendChild(left);
+      row.appendChild(right);
+      row.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        setPerson(r.p.id);
+      });
+      box.appendChild(row);
+    });
+    box.classList.add('open');
+  }
+
+  // ---------------------------------------------------------------- url
+  function writeUrl() {
+    var q = [];
+    if (state.genre) q.push('genre=' + encodeURIComponent(state.genre));
+    if (state.person) q.push('person=' + encodeURIComponent(state.person));
+    if (state.sort !== 'recent') q.push('sort=' + encodeURIComponent(state.sort));
+    var url = location.pathname + (q.length ? '?' + q.join('&') : '');
+    history.replaceState(null, '', url);
+  }
+
+  function readUrl() {
+    var p = new URLSearchParams(location.search);
+    if (p.get('genre')) state.genre = p.get('genre');
+    if (p.get('person')) state.person = p.get('person');
+    if (p.get('sort')) state.sort = p.get('sort');
+  }
+
+  // ---------------------------------------------------------------- boot
+  function wire() {
+    var input = document.getElementById('person-input');
+    var timer = null;
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      var v = input.value;
+      timer = setTimeout(function () {
+        if (!v.trim()) {
+          if (state.person) { state.person = null; render(); }
+          closeSuggestions();
+          return;
+        }
+        showSuggestions(searchNames(v, 8));
+      }, 90);
+    });
+    input.addEventListener('blur', function () { setTimeout(closeSuggestions, 120); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { closeSuggestions(); input.blur(); }
+      if (e.key === 'Enter') {
+        var first = document.querySelector('.suggestion');
+        if (first) first.dispatchEvent(new MouseEvent('mousedown'));
+      }
+    });
+
+    document.getElementById('genre-select').addEventListener('change', function (e) {
+      state.genre = e.target.value;
+      render();
+    });
+    document.getElementById('sort-select').addEventListener('change', function (e) {
+      state.sort = e.target.value;
+      render();
+    });
+    document.getElementById('clear-all').addEventListener('click', function () {
+      state.genre = '';
+      state.sort = 'recent';
+      document.getElementById('genre-select').value = '';
+      document.getElementById('sort-select').value = 'recent';
+      setPerson(null);
+    });
+  }
+
+  function boot(filmData, peopleData) {
+    films   = filmData.films || [];
+    genres  = filmData.genres || {};
+    epDates = filmData.episodes || {};
+    counts  = filmData.counts || {};
+    people  = peopleData || {};
+
+    buildNameIndex();
+    buildGenreSelect();
+    buildFrequentChips();
+    readUrl();
+
+    document.getElementById('genre-select').value = state.genre || '';
+    document.getElementById('sort-select').value = state.sort;
+    if (state.person && people[state.person]) {
+      document.getElementById('person-input').value = people[state.person];
+    }
+    wire();
+    render();
+  }
+
+  Promise.all([
+    fetch('data/films.json').then(function (r) { return r.json(); }),
+    fetch('data/people.json').then(function (r) { return r.json(); })
+  ]).then(function (res) {
+    boot(res[0], res[1]);
+  }).catch(function (err) {
+    document.getElementById('count-line').textContent =
+      'The film index could not be loaded. Please try again shortly.';
+    if (window.console) console.error('film index load failed', err);
+  });
+})();
+</script>
+</body>
+</html>

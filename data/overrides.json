@@ -1,0 +1,40 @@
+{
+  "_README": [
+    "Hand-maintained corrections for the film index. enrich.py reads this and never writes it,",
+    "and an entry here always beats a TMDB lookup — so re-running enrich.py can never revert",
+    "a correction made here. Keys are matched case- and accent-insensitively.",
+    "",
+    "  \"some title\": { \"tmdb\": 12345 }                 pin to a TMDB movie id",
+    "  \"some title\": { \"title\": \"Correct Title\" }      fix the display title only",
+    "  \"some title\": { \"tmdb\": 12345, \"title\": \"...\" } both",
+    "  \"some title\": { \"kind\": \"tv\" }                  television, held out of the film index",
+    "  \"some title\": { \"kind\": \"nonfilm\" }             festival, roundup, broadcast event",
+    "",
+    "Fix typos HERE with \"title\", not in the EPISODES array: the chapter VTTs on R2 were",
+    "written from the original spelling, and rewriting EPISODES would break the listen links.",
+    "Add \"note\" to any entry to record why."
+  ],
+
+  "Adolescence":                      { "kind": "tv", "note": "Netflix limited series" },
+  "All Her Fault":                    { "kind": "tv" },
+  "Fires":                            { "kind": "tv", "note": "ABC drama series" },
+  "Invisible Boys":                   { "kind": "tv", "note": "Stan series" },
+  "Ripley":                           { "kind": "tv", "note": "Netflix series" },
+  "Run":                              { "kind": "tv" },
+  "Slow Horses":                      { "kind": "tv", "note": "Apple TV+ series" },
+  "Squid Game":                       { "kind": "tv" },
+  "The Narrow Road to the Deep North":{ "kind": "tv", "note": "Prime Video series" },
+  "The Newsreader":                   { "kind": "tv", "note": "ABC series" },
+  "The Pursuit of Love":              { "kind": "tv" },
+  "This is Going to Hurt":            { "kind": "tv", "note": "BBC series" },
+  "Unforgiven":                       { "kind": "tv" },
+
+  "The Chair":                        { "kind": "tv", "note": "Netflix series with Sandra Oh; TMDB search wrongly matched a 2022 horror film of the same name" },
+  "Vigil":                            { "kind": "tv", "note": "BBC series; TMDB search wrongly matched a 2022 short" },
+  "Stranger Things":                  { "kind": "tv" },
+  "Hacks":                            { "kind": "tv", "note": "appears in eps 478 and 622" },
+  "Ted Lassoo":                       { "kind": "tv", "note": "Ted Lasso, misspelt in EPISODES" },
+  "Morning Wars":                     { "kind": "tv", "note": "AU title for The Morning Show" },
+
+  "& Sons":                           { "tmdb": 1291829, "note": "search otherwise matches Vishwanath & Sons" }
+}

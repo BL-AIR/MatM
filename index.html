@@ -1211,6 +1211,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return result;
     }
 
+    // Deep link carrying &feedback=1 — open the existing feedback modal once the
+    // episode (and the chapter seek, if there is one) has settled. Clicking the
+    // player's own button reuses its snapshot logic, so the submission still
+    // carries a real episode, chapter and time marker.
+    function openPendingFeedback() {
+      if (!window._pendingFeedback) return;
+      window._pendingFeedback = false;
+      setTimeout(() => {
+        const btn = document.getElementById('player-feedback');
+        if (btn) btn.click();
+      }, 200);
+    }
+
     async function loadEpisode(epNum, films) {
       const base = R2 + '/MatM_' + pad4(epNum);
       epLabel.textContent  = 'Ep ' + epNum;
@@ -1262,17 +1275,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               c.text.toLowerCase().trim() === window._pendingChapter.toLowerCase().trim()
             );
             if (target) {
+              chapterTrackTitle = target.text;
+              chapterTrackStart = target.start;
               const seekTo = target.start;
               const doSeek = () => {
                 audioEl.currentTime = seekTo;
                 audioEl.pause();
                 playBtn.textContent = '▶';
+                openPendingFeedback();
               };
               if (audioEl.readyState >= 1) {
                 doSeek();
               } else {
                 audioEl.addEventListener('loadedmetadata', doSeek, { once: true });
               }
+            } else {
+              openPendingFeedback();
             }
             window._pendingChapter = null;
           }
@@ -1518,9 +1536,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         : '';
 
       // Store the requested chapter so loadEpisode can seek after VTT loads
-      window._pendingChapter = chParam || null;
+      window._pendingChapter  = chParam || null;
+      window._pendingFeedback = params.get('feedback') === '1';
 
       loadEpisode(epNum, films);
+
+      // Safety net: if the episode has no chapters, or the named one is not in
+      // the VTT, the seek path never runs. Open the modal anyway.
+      if (window._pendingFeedback) setTimeout(openPendingFeedback, 3000);
     })();
 
     // Wire episode cards

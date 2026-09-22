@@ -1,0 +1,105 @@
+name: Enrich film index
+
+# Rebuilds data/films.json and data/people.json from the EPISODES array and TMDB,
+# then opens a pull request if anything changed. A pull request rather than a
+# direct commit on purpose: a wrong TMDB match should be caught in a diff before
+# it is live, not after.
+#
+# Run it from the Actions tab after adding a new episode. The weekly schedule is
+# a backstop for weeks when that is forgotten.
+#
+# Needs one repository secret: TMDB_KEY (Settings → Secrets and variables →
+# Actions). Without it the script falls back to the key in index.html, which
+# works but keeps the key in page source.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 22 * * 1'      # Tuesdays 08:30 Melbourne (AEST), after Monday's publish
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: enrich-film-index
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild the film index
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}
+        run: python3 tools/enrich.py --repo .
+
+      - name: Summarise what changed
+        id: diff
+        run: |
+          if git diff --quiet -- data/films.json data/people.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No change to the film index." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            {
+              echo '### Film index changes'
+              echo ''
+              echo '```'
+              git diff --stat -- data/films.json data/people.json
+              echo '```'
+              echo ''
+              python3 - <<'PY'
+          import json, subprocess
+          new = json.load(open('data/films.json'))
+          old = json.loads(subprocess.run(
+              ['git', 'show', 'HEAD:data/films.json'],
+              capture_output=True, text=True).stdout or '{}')
+          old_titles = {f.get('t') for f in old.get('films', [])}
+          added = [f for f in new['films'] if f.get('t') not in old_titles]
+          print('Indexed: %d films (was %d)' % (len(new['films']), len(old.get('films', []))))
+          print('')
+          if added:
+              print('Newly indexed:')
+              for f in added:
+                  print('- %s (ep %s)' % (f.get('n') or f.get('t'), f.get('e')))
+          held = new.get('counts', {}).get('byReason', {})
+          if held:
+              print('')
+              print('Held back: ' + ', '.join('%s %d' % kv for kv in sorted(held.items())))
+          if not new.get('counts', {}).get('chaptersVerified', True):
+              print('')
+              print('NOTE: chapter VTTs on R2 were unreachable, so listen links fall '
+                    'back to the titles as listed.')
+          PY
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Open a pull request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          add-paths: |
+            data/films.json
+            data/people.json
+          branch: film-index/refresh
+          delete-branch: true
+          commit-message: Refresh film index data
+          title: Refresh film index data
+          body: |
+            Regenerated `data/films.json` and `data/people.json` from the
+            `EPISODES` array in index.html.
+
+            Check the diff before merging — a wrong TMDB match looks exactly
+            like a right one here. Anything wrong gets an entry in
+            `data/overrides.json`, which always beats a lookup; push that to
+            this branch and re-run the workflow.
+
+            See the run summary for what changed.
+          author: Prahran Publishing <fdknvwfp2d@privaterelay.appleid.com>
