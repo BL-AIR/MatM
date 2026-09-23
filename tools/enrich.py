@@ -196,6 +196,8 @@ def lookup(item, overrides):
             return rec
         if ov.get("title"):
             rec["n"] = ov["title"]
+        if "imdb" in ov:
+            rec["_imdb_override"] = ov["imdb"]      # a tt id, or None to suppress
         if ov.get("tmdb"):
             try:
                 det = api_get("/movie/%d" % ov["tmdb"], append_to_response="credits")
@@ -256,6 +258,7 @@ def fill_from_detail(rec, det):
     rec["d"] = directors[0]["id"] if directors else None
     rec["c"] = [c["id"] for c in cast]
     rec["p"] = det.get("poster_path") or None
+    rec["m"] = det.get("imdb_id") or None
     rec["_people"] = {}
     for person in directors[:DIRECTOR_DEPTH] + cast:
         rec["_people"][str(person["id"])] = person["name"]
@@ -342,6 +345,10 @@ def main():
         rec.pop("_tmdb_title", None)
 
     # Films the page will render, plus the ones held back, with the reason.
+    for rec in records:
+        if "_imdb_override" in rec:
+            rec["m"] = rec.pop("_imdb_override")
+
     films = [r for r in records if r["s"] == "ok"]
     held = [r for r in records if r["s"] != "ok"]
 
