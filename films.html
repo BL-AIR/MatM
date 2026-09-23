@@ -1661,9 +1661,16 @@
     render();
   }
 
+  // GitHub Pages serves these with max-age=600, so for ten minutes after a
+  // deploy a returning visitor can run new page code against a cached older
+  // data file — which silently drops whatever field was just added. 'no-cache'
+  // forces a revalidation; the server answers 304 when nothing changed, so it
+  // costs a round trip and no bandwidth.
+  var FETCH = { cache: 'no-cache' };
+
   Promise.all([
-    fetch('data/films.json').then(function (r) { return r.json(); }),
-    fetch('data/people.json').then(function (r) { return r.json(); })
+    fetch('data/films.json', FETCH).then(function (r) { return r.json(); }),
+    fetch('data/people.json', FETCH).then(function (r) { return r.json(); })
   ]).then(function (res) {
     boot(res[0], res[1]);
   }).catch(function (err) {
