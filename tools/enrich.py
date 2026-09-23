@@ -109,8 +109,16 @@ def fetch_chapters(ep_num):
     later typo fix in EPISODES cannot break it.
     """
     url = "%s/MatM_%04d.chapters.vtt" % (R2, ep_num)
+    # r2.dev sits behind Cloudflare's bot filtering and refuses a default
+    # urllib user-agent with a 403, which reads exactly like "no access".
+    req = urllib.request.Request(url, headers={
+        "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                       "AppleWebKit/537.36 (KHTML, like Gecko) "
+                       "Chrome/128.0 Safari/537.36"),
+        "Accept": "text/vtt,text/plain,*/*",
+    })
     try:
-        with urllib.request.urlopen(url, timeout=20) as r:
+        with urllib.request.urlopen(req, timeout=20) as r:
             if r.status != 200:
                 return []
             body = r.read().decode("utf-8", "replace")
@@ -363,6 +371,7 @@ def main():
             "held": len(held),
             "byReason": {k: sum(1 for r in held if r["s"] == k)
                          for k in sorted({r["s"] for r in held})},
+            "chaptersVerified": chapters_verified,
         },
         "films": films,
         "held": [{"t": r["t"], "y": r["y"], "e": r["e"], "s": r["s"]} for r in held],
@@ -382,6 +391,8 @@ def main():
     (data / "people.json").write_text(
         json.dumps(people, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
+    print("chapters verified against the VTTs on R2: %s"
+          % ("yes" if chapters_verified else "NO - falling back to titles as listed"))
     print("indexed %d films, held %d (%s)" % (
         len(films), len(held),
         ", ".join("%s %d" % (k, v) for k, v in payload["counts"]["byReason"].items())))
