@@ -207,6 +207,24 @@
       margin-bottom: 1.2rem;
     }
 
+    .hero-logo {
+      display: block;
+      height: clamp(110px, 16vw, 150px);
+      width: auto;
+      margin: 0 auto 1.6rem;
+    }
+
+    .hero-badges {
+      --badge-h: clamp(130px, 32vw, 222px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(1rem, 3vw, 2rem);
+      margin-top: 3rem;
+    }
+    .hero-badges a { display: block; line-height: 0; }
+    .hero-badges img { height: var(--badge-h); width: auto; display: block; }
+
     .hero-title {
       font-family: 'Playfair Display', serif;
       font-size: clamp(3rem, 8vw, 6.5rem);
@@ -901,15 +919,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Hero -->
   <section id="hero">
-    <p class="hero-eyebrow">Golden Days Radio</p>
+    <img class="hero-logo" src="Images/matm-logo-gold.svg" alt="Madeleine at the Movies logo" width="200" height="300" />
     <h1 class="hero-title">Madeleine<br><em>at the Movies</em></h1>
     <p class="hero-subtitle">With Madeleine Swain</p>
     <div class="hero-rule"></div>
     <p class="hero-lead">Film criticism with warmth, wit, and a love for the pictures — old and new, foreign and familiar.</p>
     <div style="display:inline-flex; flex-direction:column; align-items:stretch;">
       <a href="#episodes" class="hero-cta">Listen to the Episodes</a>
-      <a href="https://www.caths.org.au" target="_blank" rel="noopener" style="margin-top:3rem; display:block;">
-        <img src="Images/CATHS.png" alt="CATHS" style="width:0; min-width:100%; height:auto; display:block;" />
+    </div>
+    <div class="hero-badges">
+      <a href="https://goldendaysradio.com" target="_blank" rel="noopener" title="3GDR Golden Days Radio 95.7 FM">
+        <img src="Images/3GDR-panel.jpg" alt="3GDR Golden Days Radio 95.7 FM" width="360" height="475" />
+      </a>
+      <a href="https://www.caths.org.au" target="_blank" rel="noopener" title="Cinema and Theatre Historical Society of Australia">
+        <img src="Images/CATHS.png" alt="CATHS — Cinema and Theatre Historical Society of Australia" width="1224" height="964" />
       </a>
     </div>
     <p class="hero-lead" style="margin-top:1.5rem;">Madeleine at the Movies is proud to be associated with The Cinema and Theatre Historical Society.</p>

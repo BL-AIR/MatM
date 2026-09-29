@@ -1,0 +1,11 @@
+# GitHub Pages build settings.
+# These files live in the repo (so they're versioned and the GitHub Action
+# can use them) but are NOT published to matm.com.au.
+exclude:
+  - README.md
+  - convert.sh
+  - make_chapters.py
+  - matm_publish.py
+  - tools/
+  - worker/
+  - streaming/
