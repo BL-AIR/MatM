@@ -208,10 +208,15 @@
     }
 
     .hero-logo {
+      /* Sized from the title's font-size so the sprocket strips sit over
+         the d and l ascenders of "Madeleine" at every width. */
+      font-size: clamp(3rem, 8vw, 6.5rem);
       display: block;
-      height: clamp(110px, 16vw, 150px);
+      height: 1.449em;
       width: auto;
       margin: 0 auto 1.6rem;
+      position: relative;
+      left: -0.106em;
     }
 
     .hero-badges {
@@ -919,7 +924,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Hero -->
   <section id="hero">
-    <img class="hero-logo" src="Images/matm-logo-gold.svg" alt="Madeleine at the Movies logo" width="200" height="300" />
+    <img class="hero-logo" src="Images/matm-logo-gold.svg" alt="Madeleine at the Movies logo" width="240" height="300" />
     <h1 class="hero-title">Madeleine<br><em>at the Movies</em></h1>
     <p class="hero-subtitle">With Madeleine Swain</p>
     <div class="hero-rule"></div>
