@@ -760,7 +760,10 @@
   'use strict';
 
   var IMG = 'https://image.tmdb.org/t/p/w342';
-  var EMBARGO_DAYS = 7;        // mirrors the embargo on index.html
+  // Publicist embargoes, kept by the matm-publicist worker (see index.html).
+  var EMBARGO_URL = 'https://matm-publicist.2bzbk74ry7.workers.dev/embargo';
+  var embargoes = {};
+  var IS_EDITOR = (function () { try { return !!localStorage.getItem('matm_embargo_key'); } catch (e) { return false; } })();
   var FREQUENT_MIN = 5;        // people needing this many films to earn a chip
 
   var films = [], people = {}, genres = {}, epDates = {}, counts = {};
@@ -1042,10 +1045,9 @@
     return isNaN(d) ? null : d;
   }
   function isEmbargoed(f) {
-    var d = parseEpDate(epDates[String(f.e)] || '');
-    if (!d) return false;
-    var age = (Date.now() - d.getTime()) / 86400000;
-    return age < EMBARGO_DAYS;
+    if (IS_EDITOR) return false;
+    var e = embargoes[String(f.e)];
+    return !!(e && e.until > Date.now());
   }
 
   // ---------------------------------------------------------------- player
@@ -1442,8 +1444,8 @@
       // get named rather than quietly going missing from the arithmetic.
       var parts = [counts.held + ' still being checked'];
       if (embargoed) {
-        parts.push(embargoed === 1 ? '1 held until broadcast'
-                                   : embargoed + ' held until broadcast');
+        parts.push(embargoed === 1 ? '1 under embargo'
+                                   : embargoed + ' under embargo');
       }
       line.textContent = total + ' of ' + counts.total + ' reviewed titles indexed — '
         + parts.join(', ') + ', and festivals, roundups and television are not included.';
@@ -1637,7 +1639,8 @@
     });
   }
 
-  function boot(filmData, peopleData) {
+  function boot(filmData, peopleData, embargoData) {
+    embargoes = (embargoData && typeof embargoData === 'object') ? embargoData : {};
     films   = filmData.films || [];
     genres  = filmData.genres || {};
     epDates = filmData.episodes || {};
@@ -1670,9 +1673,14 @@
 
   Promise.all([
     fetch('data/films.json', FETCH).then(function (r) { return r.json(); }),
-    fetch('data/people.json', FETCH).then(function (r) { return r.json(); })
+    fetch('data/people.json', FETCH).then(function (r) { return r.json(); }),
+    // Fails open: if the worker can't be reached, nothing is held back.
+    Promise.race([
+      fetch(EMBARGO_URL).then(function (r) { return r.ok ? r.json() : {}; }),
+      new Promise(function (ok) { setTimeout(function () { ok({}); }, 4000); })
+    ]).catch(function () { return {}; })
   ]).then(function (res) {
-    boot(res[0], res[1]);
+    boot(res[0], res[1], res[2]);
   }).catch(function (err) {
     document.getElementById('count-line').textContent =
       'The film index could not be loaded. Please try again shortly.';
