@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Cookie consent: must load before Google Analytics and Tag Manager -->
+  <script src="/consent.js"></script>
+  <link rel="stylesheet" href="/consent.css" />
+  <!-- Google Analytics 4 (loads directly: the player's gtag events need it; the GA4 tag in Tag Manager is paused). Respects consent. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LP2YW1SF4G"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-LP2YW1SF4G');
+  </script>
+  <!-- End Google Analytics 4 -->
+  <!-- Google Tag Manager (also loads Microsoft Clarity, which waits for consent) -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PDQR56RW');</script>
+  <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Film Index — Madeleine at the Movies</title>
   <meta name="description" content="Every film reviewed by Madeleine Swain on Golden Days Radio, browsable by genre, director and cast." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230c0c0c'/><rect x='2' y='4' width='4' height='5' rx='1' fill='white'/><rect x='2' y='13' width='4' height='5' rx='1' fill='white'/><rect x='2' y='22' width='4' height='5' rx='1' fill='white'/><rect x='26' y='4' width='4' height='5' rx='1' fill='white'/><rect x='26' y='13' width='4' height='5' rx='1' fill='white'/><rect x='26' y='22' width='4' height='5' rx='1' fill='white'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/fonts/fonts.css" />
   <style>
     :root {
       --black:   #0c0c0c;
@@ -750,7 +765,7 @@
   </div>
 
   <footer>
-    <p><a href="/copyright">© 2026</a> Madeleine at the Movies &nbsp;·&nbsp; <a href="/">matm.com.au</a> &nbsp;·&nbsp; Golden Days Radio &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a></p>
+    <p><a href="/copyright">© 2026</a> Madeleine at the Movies &nbsp;·&nbsp; <a href="/">matm.com.au</a> &nbsp;·&nbsp; Golden Days Radio &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/privacy#cookies" data-cookie-settings>Cookie settings</a></p>
     <p class="credit-line">Madeleine at the Movies is produced and edited by <a href="https://blairpurvis.com" target="_blank" rel="noopener">Blair Purvis</a>.</p>
     <p class="tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
   </footer>
