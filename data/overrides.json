@@ -36,5 +36,7 @@
   "Ted Lassoo":                       { "kind": "tv", "note": "Ted Lasso, misspelt in EPISODES" },
   "Morning Wars":                     { "kind": "tv", "note": "AU title for The Morning Show" },
 
-  "& Sons":                           { "tmdb": 1291829, "note": "search otherwise matches Vishwanath & Sons" }
+  "& Sons":                           { "tmdb": 1291829, "note": "search otherwise matches Vishwanath & Sons" },
+  "First Light":                      { "tmdb": 1495025, "note": "2026 Filipino feature; search drifted to a 2025 Vietnamese short" },
+  "Iris and the Men":                 { "tmdb": 1001079, "note": "TMDB retitled it It's Raining Men (Iris et les hommes)" }
 }
