@@ -38,5 +38,7 @@
 
   "& Sons":                           { "tmdb": 1291829, "note": "search otherwise matches Vishwanath & Sons" },
   "First Light":                      { "tmdb": 1495025, "note": "2026 Filipino feature; search drifted to a 2025 Vietnamese short" },
-  "Iris and the Men":                 { "tmdb": 1001079, "note": "TMDB retitled it It's Raining Men (Iris et les hommes)" }
+  "Iris and the Men":                 { "tmdb": 1001079, "note": "TMDB retitled it It's Raining Men (Iris et les hommes)" },
+  "Midas Man":                        { "tmdb": 819277, "note": "pinned 8 Nov 2026 after enrich dropped it to review" },
+  "A Family":                         { "tmdb": 736146, "note": "pinned 8 Nov 2026 (2021 film) after enrich dropped it to review" }
 }
