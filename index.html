@@ -1702,6 +1702,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         'mqff', 'cat video fest',
         'interview with noni hazelhurst',
         'one mind, one heart',
+        "one flew over the cuckoo's nest",   // 2026 stage production, ep 750 — not the 1975 film
       ]);
 
       // Skip if title *contains* any of these substrings.
@@ -1728,6 +1729,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // film (e.g. '& Sons' otherwise matches 'Vishwanath & Sons', 2026).
       const TMDB_OVERRIDE = {
         '& sons': 1291829,
+      };
+
+      // Hand-supplied posters for titles TMDB can't (or shouldn't) supply,
+      // e.g. stage productions. Keyed on the lowercased title as in EPISODES.
+      // Pair with a SKIP_EXACT entry so no TMDB lookup happens. Optional url
+      // adds a "Visit" link; IMDb and RT links are suppressed for these.
+      const LOCAL_POSTERS = {
+        "one flew over the cuckoo's nest": { poster: 'Images/posters/one-flew-over-the-cuckoos-nest-2026.jpg', url: null },
       };
 
       // Festival website links.
@@ -1886,6 +1895,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const key     = title.toLowerCase().trim();
         const wrap    = li.querySelector('.film-poster-wrap');
         const linksEl = li.querySelector('.film-ext-links');
+
+        // Hand-supplied poster (stage productions etc.): poster + optional Visit link only
+        const local = LOCAL_POSTERS[key];
+        if (local) {
+          if (wrap && local.poster) {
+            const img = document.createElement('img');
+            img.src = local.poster;
+            img.alt = '';
+            img.loading = 'lazy';
+            wrap.appendChild(img);
+            wrap.dataset.posterLg = local.poster;
+          }
+          if (linksEl && local.url) linksEl.appendChild(makeLink(local.url, 'Visit'));
+          return;
+        }
 
         // Festival entries: show a Visit link, nothing else
         const festival = FESTIVAL_LINKS.find(f => key.includes(f.match));
